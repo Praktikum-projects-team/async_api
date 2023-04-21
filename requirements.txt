@@ -1,0 +1,12 @@
+pytest==6.2.5
+pre-commit==2.15.0
+python-dotenv==1.0.0
+psycopg2-binary==2.9.5
+typing-extensions==4.2.0
+pydantic==1.10.7
+redis==4.4.2
+elasticsearch[async]==7.9.1
+fastapi==0.61.1
+orjson==3.8.10
+uvicorn==0.12.2
+uvloop==0.17.0 ; sys_platform != "win32" and implementation_name == "cpython"
