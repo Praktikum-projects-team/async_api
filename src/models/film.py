@@ -13,7 +13,7 @@ class FilmBase(BaseApiModel):
 
 class Film(FilmBase):
     description: Optional[str]
-    directors: Optional[list[PersonBase]] = Field(default=list)
-    actors: Optional[list[PersonBase]] = Field(default=list)
-    writers: Optional[list[PersonBase]] = Field(default=list)
+    directors: Optional[list[PersonBase]] = Field(default_factory=list)
+    actors: Optional[list[PersonBase]] = Field(default_factory=list)
+    writers: Optional[list[PersonBase]] = Field(default_factory=list)
     genre: list[Genre]

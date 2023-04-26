@@ -1,5 +1,6 @@
-from pydantic import UUID4
+from pydantic import UUID4, Field
 from base import BaseApiModel
+from typing import Optional
 
 
 class PersonFilms:
@@ -10,4 +11,4 @@ class PersonFilms:
 class PersonBase(BaseApiModel):
     uuid: UUID4
     full_name: str
-    films: list[PersonFilms]
+    films: Optional[list[PersonFilms]] = Field(default_factory=list)
