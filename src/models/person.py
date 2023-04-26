@@ -1,23 +1,13 @@
-import orjson
-from pydantic import BaseModel, UUID4
-from film import FilmBase
+from pydantic import UUID4
+from base import BaseApiModel
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
+class PersonFilms:
+    roles: list[str]
+    uuid: UUID4
 
 
-class PersonBase(BaseModel):
-    id: UUID4
-    name: str
-
-    class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
-
-
-class Person(PersonBase):
-    role: list[str]
-    films: list[FilmBase]
-
-
+class PersonBase(BaseApiModel):
+    uuid: UUID4
+    full_name: str
+    films: list[PersonFilms]
