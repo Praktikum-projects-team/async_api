@@ -1,16 +1,25 @@
 import os
 from logging import config as logging_config
-
+from pydantic import BaseSettings, Field
 from core.logger import LOGGING
 
 logging_config.dictConfig(LOGGING)
 
-PROJECT_NAME = os.getenv('PROJECT_NAME', 'movies')
-
-REDIS_HOST = os.getenv('REDIS_HOST', '127.0.0.1')
-REDIS_PORT = int(os.getenv('REDIS_PORT', 6379))
-
-ELASTIC_HOST = os.getenv('ELASTIC_HOST', '127.0.0.1')
-ELASTIC_PORT = int(os.getenv('ELASTIC_PORT', 9200))
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+class AppConfig(BaseSettings):
+    base_dir: str = BASE_DIR
+    project_name: str = Field(..., env='PROJECT_NAME')
+    host: str = Field(..., env='APP_HOST')
+    port: int = Field(..., env='APP_PORT')
+
+
+class ElasticConfig(BaseSettings):
+    host: str = Field(..., env='ELASTIC_HOST')
+    port: int = Field(..., env='ELASTIC_PORT')
+
+
+class RedisConfig(BaseSettings):
+    host: str = Field(..., env='REDIS_HOST')
+    port: int = Field(..., env='REDIS_PORT')
