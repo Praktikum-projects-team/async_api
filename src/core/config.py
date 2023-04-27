@@ -9,6 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 class AppConfig(BaseSettings):
+    base_dir: str = BASE_DIR
     project_name: str = Field(..., env='PROJECT_NAME')
     host: str = Field(..., env='APP_HOST')
     port: int = Field(..., env='APP_PORT')
