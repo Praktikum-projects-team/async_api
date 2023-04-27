@@ -10,6 +10,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 class AppConfig(BaseSettings):
     project_name: str = Field(..., env='PROJECT_NAME')
+    host: str = Field(..., env='APP_HOST')
+    port: int = Field(..., env='APP_PORT')
 
 
 class ElasticConfig(BaseSettings):
