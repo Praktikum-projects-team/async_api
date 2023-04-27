@@ -11,8 +11,13 @@ from core import config
 from core.logger import LOGGING
 from db import elastic, redis
 
+app_config = config.AppConfig()
+elastic_config = config.ElasticConfig()
+redis_config = config.RedisConfig()
+
+
 app = FastAPI(
-    title=config.PROJECT_NAME,
+    title=app_config.project_name,
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
@@ -21,8 +26,8 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
-    elastic.es = AsyncElasticsearch(hosts=[f'{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
+    redis.redis = Redis(host=redis_config.host, port=redis_config.port)
+    elastic.es = AsyncElasticsearch(hosts=[f'{elastic_config.host}:{elastic_config.port}'])
 
 
 @app.on_event('shutdown')
