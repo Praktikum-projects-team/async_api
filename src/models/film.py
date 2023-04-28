@@ -1,7 +1,7 @@
 from pydantic import UUID4, Field
-from base import BaseApiModel
-from genre import Genre
-from person import PersonBase
+from models.base import BaseApiModel
+from models.genre import Genre
+from models.person import PersonBase
 from typing import Optional
 
 
