@@ -1,16 +1,19 @@
-import orjson
-from pydantic import BaseModel
+from pydantic import UUID4, Field
+from models.base import BaseApiModel
+from models.genre import Genre
+from models.person import PersonBase
+from typing import Optional
 
 
-def orjson_dumps(v, *, default):
-    return orjson.dumps(v, default=default).decode()
-
-
-class Film(BaseModel):
-    id: str
+class FilmBase(BaseApiModel):
+    uuid: UUID4
     title: str
-    description: str
+    imdb_rating: Optional[float]
 
-    class Config:
-        json_loads = orjson.loads
-        json_dumps = orjson_dumps
+
+class Film(FilmBase):
+    description: Optional[str]
+    directors: Optional[list[PersonBase]] = Field(default_factory=list)
+    actors: Optional[list[PersonBase]] = Field(default_factory=list)
+    writers: Optional[list[PersonBase]] = Field(default_factory=list)
+    genre: list[Genre]
