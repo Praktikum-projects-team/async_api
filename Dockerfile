@@ -11,4 +11,4 @@ RUN  pip install --upgrade pip \
 
 COPY ./src .
 
-CMD wait-for-it -s "${REDIS_HOST}:${REDIS_PORT}" -s "${ELASTIC_HOST}:${ELASTIC_PORT}" --timeout 60 && python main.py
+CMD wait-for-it -s "${REDIS_HOST}:${REDIS_PORT}" -s "${ELASTIC_HOST}:${ELASTIC_PORT}" --timeout 120 && python main.py

@@ -45,9 +45,9 @@ services:
     image: redis:7
     env_file:
       - ./.env
-    environment:
-      - REDIS_PASSWORD=myredispassword
-      - REDIS_USERNAME=myredisuser
+#    environment:
+#      - REDIS_PASSWORD=myredispassword
+#      - REDIS_USERNAME=myredisuser
     ports:
       - "6379:6379"
 
@@ -62,10 +62,10 @@ services:
     ports:
       - "8000:8000"
 
-#  etl:
-#    image: ghcr.io....
-#    env_file:
-#      - ./.env
-#    depends_on:
-#      - postgres
-#      - elastic
+  etl:
+    image: ghcr.io/praktikum-projects-team/pg_to_es_etl:0.1.0
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+      - elastic
