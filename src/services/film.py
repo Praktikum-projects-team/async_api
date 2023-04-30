@@ -3,13 +3,18 @@ from typing import Optional
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
+from orjson import orjson
 from redis.asyncio import Redis
 
+from core import config
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.film import Film
+from api.v1.models_api import EsFilterGenre, FilmDetails
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
+
+elastic_config = config.ElasticConfig()
 
 
 class FilmService:
@@ -17,6 +22,13 @@ class FilmService:
         self.redis = redis
         self.elastic = elastic
 
+    async def _anything_from_cache(self):
+        pass
+
+    async def _put_anything_to_cache(self):
+        pass
+
+    # Получение одного фильма
     async def get_by_id(self, film_id: str) -> Optional[Film]:
         film = await self._film_from_cache(film_id)
         if not film:
@@ -28,7 +40,7 @@ class FilmService:
 
     async def _get_film_from_elastic(self, film_id: str) -> Optional[Film]:
         try:
-            doc = await self.elastic.get('movies', film_id)
+            doc = await self.elastic.get(elastic_config.index_movies, film_id)
         except NotFoundError:
             return None
         return Film(**doc['_source'])
@@ -42,6 +54,47 @@ class FilmService:
 
     async def _put_film_to_cache(self, film: Film):
         await self.redis.set(film.id, film.json(), FILM_CACHE_EXPIRE_IN_SECONDS)
+
+    # Получение списка фильмов
+    async def get_all_films(
+        self,
+        sort: str,
+        page_size: int,
+        page_number: int,
+        genre_filter: str
+    ) -> Optional[list[FilmDetails]]:
+
+        if genre_filter:
+            filter_ = EsFilterGenre()
+            filter_.query.term.genre.value = genre_filter
+            genre_filter = filter_.json()
+
+        data = await self._anything_from_cache()
+        if data:
+            films = [FilmDetails(**row) for row in orjson.loads(data)]
+        else:
+            films = await self._get_films_from_elastic(page_size, page_number, sort, body=genre_filter)
+            await self._put_anything_to_cache()
+        return films
+
+    async def _get_films_from_elastic(
+            self,
+            page_size: int,
+            page_number: int,
+            sort: str = None,
+            body: str = None
+    ) -> Optional[list[FilmDetails]]:
+        from_ = page_size * (page_number - 1)
+
+        docs = await self.elastic.search(
+            index=elastic_config.index_movies,
+            sort=sort,
+            size=page_size,
+            from_=from_,
+            body=body
+        )
+        films = [FilmDetails(**doc['_source']) for doc in docs['hits']['hits']]
+        return films
 
 
 @lru_cache()
