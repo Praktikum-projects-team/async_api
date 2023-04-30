@@ -23,3 +23,4 @@ class ElasticConfig(BaseSettings):
 class RedisConfig(BaseSettings):
     host: str = Field(..., env='REDIS_HOST')
     port: int = Field(..., env='REDIS_PORT')
+    password: str = Field(..., env='REDIS_PASSWORD')
