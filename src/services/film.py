@@ -1,3 +1,4 @@
+import inspect
 from functools import lru_cache
 from typing import Optional
 
@@ -9,8 +10,8 @@ from redis.asyncio import Redis
 from core import config
 from db.elastic import get_elastic
 from db.redis import get_redis
-from models.film import Film
-from api.v1.models_api import EsFilterGenre, FilmDetails
+from models.film import Film, FilmBase
+from models.elastic import EsFilterGenre, EsQuery
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
@@ -22,7 +23,7 @@ class FilmService:
         self.redis = redis
         self.elastic = elastic
 
-    async def _anything_from_cache(self):
+    async def _get_anything_from_cache(self):
         pass
 
     async def _put_anything_to_cache(self):
@@ -57,21 +58,21 @@ class FilmService:
 
     # Получение списка фильмов
     async def get_all_films(
-        self,
-        sort: str,
-        page_size: int,
-        page_number: int,
-        genre_filter: str
-    ) -> Optional[list[FilmDetails]]:
+            self,
+            sort: str,
+            page_size: int,
+            page_number: int,
+            genre_filter: str
+    ) -> Optional[list[Film]]:
 
         if genre_filter:
             filter_ = EsFilterGenre()
             filter_.query.term.genre.value = genre_filter
             genre_filter = filter_.json()
 
-        data = await self._anything_from_cache()
+        data = await self._get_anything_from_cache()
         if data:
-            films = [FilmDetails(**row) for row in orjson.loads(data)]
+            films = [Film(**row) for row in orjson.loads(data)]
         else:
             films = await self._get_films_from_elastic(page_size, page_number, sort, body=genre_filter)
             await self._put_anything_to_cache()
@@ -83,7 +84,7 @@ class FilmService:
             page_number: int,
             sort: str = None,
             body: str = None
-    ) -> Optional[list[FilmDetails]]:
+    ) -> Optional[list[Film]]:
         from_ = page_size * (page_number - 1)
 
         docs = await self.elastic.search(
@@ -93,7 +94,31 @@ class FilmService:
             from_=from_,
             body=body
         )
-        films = [FilmDetails(**doc['_source']) for doc in docs['hits']['hits']]
+        films = [Film(**doc['_source']) for doc in docs['hits']['hits']]
+        return films
+
+    # Поиск фильмов
+    async def search_film(
+            self,
+            query: str,
+            page_size: int,
+            page_number: int
+    ) -> Optional[list[FilmBase]]:
+        query_body = EsQuery()
+        query_body.query.multi_match.query = query
+
+        # Здесь нужно отладить передачу для `search_fields`
+        fields = [attr for attr in dir(FilmBase) if not inspect.ismethod(getattr(FilmBase, attr))]
+        query_body.query.multi_match.search_fields = fields
+
+        body = query_body.json(by_alias=True)
+
+        data = await self._get_anything_from_cache()
+        if data:
+            films = [FilmBase(**row) for row in orjson.loads(data)]
+        else:
+            films = await self._get_films_from_elastic(page_size, page_number, body=body)
+            await self._put_anything_to_cache()
         return films
 
 

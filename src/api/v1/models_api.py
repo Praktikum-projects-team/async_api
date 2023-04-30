@@ -2,10 +2,8 @@ from enum import Enum
 from typing import Optional
 
 from fastapi import Query
-from pydantic import Field
 
 from core import config
-from models.base import BaseApiModel
 from models.film import Film
 
 app_config = config.AppConfig()
@@ -60,18 +58,13 @@ class FilmGenreFilter:
         self.genre_filter = genre_filter
 
 
-class EsFilterGenreValue(BaseApiModel):
-    value: str = Field('')
-    boost: float = 1.0
-
-
-class EsFilterGenreField(BaseApiModel):
-    genre: EsFilterGenreValue = Field(EsFilterGenreValue())
-
-
-class EsFilterTermGenre(BaseApiModel):
-    term: EsFilterGenreField = Field(EsFilterGenreField())
-
-
-class EsFilterGenre(BaseApiModel):
-    query: EsFilterTermGenre = Field(EsFilterTermGenre())
+class FilmQuery:
+    def __init__(
+        self,
+        query: Optional[str] = Query(
+            ...,
+            title='Query field',
+            description='Query field (search by word in title and description field)'
+        )
+    ) -> None:
+        self.query = query

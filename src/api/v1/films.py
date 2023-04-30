@@ -3,10 +3,43 @@ from http import HTTPStatus
 from fastapi import APIRouter, Depends, HTTPException
 
 from models.film import FilmBase
-from api.v1.models_api import FilmDetails, FilmGenreFilter, FilmSort, Page
+from api.v1.models_api import FilmDetails, FilmGenreFilter, FilmQuery, FilmSort, Page
 from services.film import FilmService, get_film_service
 
 router = APIRouter()
+
+
+@router.get(
+    '',
+    response_model=list[FilmBase],
+    summary='Список фильмов',
+    description='Список фильмов с пагинацией, фильтрацией по жанрам и сортировкой по рейтингу',
+    response_description='uuid, название и рейтинг'
+)
+async def get_all_film(
+    genre_filter: FilmGenreFilter = Depends(),
+    sort: FilmSort = Depends(),
+    page: Page = Depends(),
+    film_service: FilmService = Depends(get_film_service)
+) -> list[FilmBase]:
+    films = await film_service.get_all_films(sort.sort, page.page_size, page.page_number, genre_filter.genre_filter)
+    return films
+
+
+@router.get(
+    '/search',
+    response_model=list[FilmBase],
+    summary='Поиск фильмов',
+    description='Список фильмов, удовлетворяющих условию поиска',
+    response_description='фильмы с их uuid, названием и рейтингом'
+)
+async def search_film(
+    query: FilmQuery = Depends(),
+    page: Page = Depends(),
+    film_service: FilmService = Depends(get_film_service)
+) -> list[FilmBase]:
+    films = await film_service.search_film(query.query, page.page_size, page.page_number)
+    return films
 
 
 @router.get(
@@ -33,20 +66,3 @@ async def film_details(
         writers=film.writers,
         genre=film.genre,
     )
-
-
-@router.get(
-    '',
-    response_model=list[FilmBase],
-    summary='Список фильмов',
-    description='Список фильмов с пагинацией, фильтрацией по жанрам и сортировкой по рейтингу',
-    response_description='uuid, название и рейтинг'
-)
-async def get_all_film(
-    genre_filter: FilmGenreFilter = Depends(),
-    sort: FilmSort = Depends(),
-    page: Page = Depends(),
-    film_service: FilmService = Depends(get_film_service)
-) -> list[FilmBase]:
-    films = await film_service.get_all_films(sort.sort, page.page_size, page.page_number, genre_filter.genre_filter)
-    return films
