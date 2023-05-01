@@ -24,8 +24,6 @@ class Page:
 
 
 class FilmSortEnum(str, Enum):
-    imdb_rating_asc: str = 'imdb_rating:asc'
-    imdb_rating_asc_alias: str = 'imdb_rating'
     imdb_rating_desc: str = 'imdb_rating:desc'
     imdb_rating_desc_alias: str = '-imdb_rating'
 
@@ -39,23 +37,21 @@ class FilmSort:
             description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
         )
     ) -> None:
-        if sort == FilmSortEnum.imdb_rating_asc_alias:
-            sort = FilmSortEnum.imdb_rating_asc
         if sort == FilmSortEnum.imdb_rating_desc_alias:
             sort = FilmSortEnum.imdb_rating_desc
         self.sort = sort
 
 
-class FilmGenreFilter:
+class FilmFilter:
     def __init__(
         self,
-        genre_filter: Optional[str] = Query(
+        genre: Optional[str] = Query(
             None,
             title='Genre filter',
             description='Filter films by genre',
         )
     ) -> None:
-        self.genre_filter = genre_filter
+        self.genre = genre
 
 
 class FilmQuery:
