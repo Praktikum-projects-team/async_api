@@ -38,7 +38,7 @@ async def search_film(
     page: Page = Depends(),
     film_service: FilmService = Depends(get_film_service)
 ) -> list[FilmBase]:
-    films = await film_service.search_film(query.query, page.page_size, page.page_number)
+    films = await film_service.search_film(page.page_size, page.page_number, query.query)
     return films
 
 

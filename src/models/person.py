@@ -14,6 +14,3 @@ class PersonBase(BaseApiModel):
     uuid: UUID4
     full_name: str
     films: Optional[list[PersonFilms]] = Field(default_factory=list)
-
-    class Config:
-        arbitrary_types_allowed = True

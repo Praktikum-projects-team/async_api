@@ -1,6 +1,5 @@
-import inspect
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Union
 
 from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
@@ -10,8 +9,8 @@ from redis.asyncio import Redis
 from core import config
 from db.elastic import get_elastic
 from db.redis import get_redis
-from models.film import Film, FilmBase
-from models.elastic import EsFilterGenre, EsQuery
+from models.elastic import EsFilterGenre
+from models.film import Film
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
@@ -83,7 +82,7 @@ class FilmService:
             page_size: int,
             page_number: int,
             sort: str = None,
-            body: str = None
+            body: Union[str, dict] = None,
     ) -> Optional[list[Film]]:
         from_ = page_size * (page_number - 1)
 
@@ -94,28 +93,22 @@ class FilmService:
             from_=from_,
             body=body
         )
+
         films = [Film(**doc['_source']) for doc in docs['hits']['hits']]
         return films
 
     # Поиск фильмов
     async def search_film(
             self,
-            query: str,
             page_size: int,
-            page_number: int
-    ) -> Optional[list[FilmBase]]:
-        query_body = EsQuery()
-        query_body.query.multi_match.query = query
-
-        # Здесь нужно отладить передачу для `search_fields`
-        fields = [attr for attr in dir(FilmBase) if not inspect.ismethod(getattr(FilmBase, attr))]
-        query_body.query.multi_match.search_fields = fields
-
-        body = query_body.json(by_alias=True)
+            page_number: int,
+            query: str
+    ) -> Optional[list[Film]]:
+        body = {"query": {"bool": {"must": [{"multi_match": {"query": query, "fields": ["title", "description"]}}]}}}
 
         data = await self._get_anything_from_cache()
         if data:
-            films = [FilmBase(**row) for row in orjson.loads(data)]
+            films = [Film(**row) for row in orjson.loads(data)]
         else:
             films = await self._get_films_from_elastic(page_size, page_number, body=body)
             await self._put_anything_to_cache()

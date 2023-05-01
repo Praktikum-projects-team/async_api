@@ -19,17 +19,3 @@ class EsFilterTermGenre(BaseApiModel):
 
 class EsFilterGenre(BaseApiModel):
     query: EsFilterTermGenre = Field(EsFilterTermGenre())
-
-
-# Классы для поиска фильмов
-class EsQuerySearchParameters(BaseApiModel):
-    query: str = Field('')
-    search_fields: list[str] = Field(['title', 'description'])
-
-
-class EsQuerySearchType(BaseApiModel):
-    multi_match: EsQuerySearchParameters = Field(EsQuerySearchParameters())
-
-
-class EsQuery(BaseApiModel):
-    query: EsQuerySearchType = Field(EsQuerySearchType())
