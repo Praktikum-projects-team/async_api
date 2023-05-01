@@ -12,7 +12,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/v1/films?sort=-imdb_rating&page_size=5&page_number=2&genre=Western",
+					"raw": "http://127.0.0.1:8000/api/v1/films?sort=-imdb_rating&page_size=5&page_number=2&genre=3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -41,7 +41,7 @@
 						},
 						{
 							"key": "genre",
-							"value": "Western"
+							"value": "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff"
 						}
 					]
 				}

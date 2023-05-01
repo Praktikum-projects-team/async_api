@@ -21,4 +21,4 @@ class Film(FilmBase):
     directors: Optional[list[FilmPerson]] = Field(default_factory=list)
     actors: Optional[list[FilmPerson]] = Field(default_factory=list)
     writers: Optional[list[FilmPerson]] = Field(default_factory=list)
-    genre: list[str] = Field(default_factory=list)
+    genre: list[dict] = Field(default_factory=list)
