@@ -102,7 +102,8 @@ class FilmService:
             self,
             page_size: int,
             page_number: int,
-            query: str
+            query: str,
+            sort: str,
     ) -> Optional[list[Film]]:
         body = {"query": {"bool": {"must": [{"multi_match": {"query": query, "fields": ["title", "description"]}}]}}}
 
@@ -110,7 +111,7 @@ class FilmService:
         if data:
             films = [Film(**row) for row in orjson.loads(data)]
         else:
-            films = await self._get_films_from_elastic(page_size, page_number, body=body)
+            films = await self._get_films_from_elastic(page_size, page_number, sort, body=body)
             await self._put_anything_to_cache()
         return films
 

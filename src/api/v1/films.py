@@ -36,9 +36,10 @@ async def get_all_film(
 async def search_film(
     query: FilmQuery = Depends(),
     page: Page = Depends(),
+    sort: FilmSort = Depends(),
     film_service: FilmService = Depends(get_film_service)
 ) -> list[FilmBase]:
-    films = await film_service.search_film(page.page_size, page.page_number, query.query)
+    films = await film_service.search_film(page.page_size, page.page_number, query.query, sort.sort)
     return films
 
 

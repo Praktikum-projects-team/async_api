@@ -54,7 +54,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:8000/api/v1/films/search?query=one",
+					"raw": "http://127.0.0.1:8000/api/v1/films/search?page_size=5&page_number=1&query=one",
 					"protocol": "http",
 					"host": [
 						"127",
@@ -72,17 +72,20 @@
 					"query": [
 						{
 							"key": "page_size",
-							"value": "5",
-							"disabled": true
+							"value": "5"
 						},
 						{
 							"key": "page_number",
-							"value": "1",
-							"disabled": true
+							"value": "1"
 						},
 						{
 							"key": "query",
 							"value": "one"
+						},
+						{
+							"key": "sort",
+							"value": "-imdb_rating",
+							"disabled": true
 						}
 					]
 				}
