@@ -1,0 +1,118 @@
+{
+	"info": {
+		"_postman_id": "de4170eb-10d7-4412-b5e8-ad12a08ccd75",
+		"name": "Movies Fast Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5319546"
+	},
+	"item": [
+		{
+			"name": "Список всех фильмов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/films?sort=-imdb_rating&page_size=5&page_number=2&genre_filter=Western",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"films"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "-imdb_rating"
+						},
+						{
+							"key": "page_size",
+							"value": "5"
+						},
+						{
+							"key": "page_number",
+							"value": "2"
+						},
+						{
+							"key": "genre_filter",
+							"value": "Western"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Поиск фильмов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/films/search?query=one",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"films",
+						"search"
+					],
+					"query": [
+						{
+							"key": "page_size",
+							"value": "5",
+							"disabled": true
+						},
+						{
+							"key": "page_number",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "query",
+							"value": "one"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Один фильм",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/films/00af52ec-9345-4d66-adbe-50eb917f463a",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"films",
+						"00af52ec-9345-4d66-adbe-50eb917f463a"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
