@@ -14,6 +14,7 @@ class AppConfig(BaseSettings):
     host: str = Field(..., env='APP_HOST')
     port: int = Field(..., env='APP_PORT')
     default_page_size: int = Field(..., env='DEFAULT_PAGE_SIZE')
+    is_debug: bool = Field(..., env='IS_DEBUG')
 
     class Config:
         case_sensitive = False

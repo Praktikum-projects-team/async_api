@@ -45,5 +45,5 @@ if __name__ == '__main__':
         host=app_config.host,
         port=app_config.port,
         log_config=LOGGING,
-        log_level=logging.DEBUG,
+        log_level=logging.DEBUG if app_config.is_debug else logging.INFO,
     )

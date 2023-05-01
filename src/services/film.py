@@ -68,8 +68,7 @@ class FilmService:
             await self._put_anything_to_cache()
         return films
 
-        # Поиск фильмов
-
+    # Поиск фильмов
     async def search_film(
             self,
             page_size: int,

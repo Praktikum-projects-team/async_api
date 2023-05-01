@@ -1,16 +1,32 @@
-from enum import Enum
 from typing import Optional
 
 from fastapi import Query
+from pydantic import Field
 
 from core import config
-from models.film import Film
+from models.base import BaseApiModel
+from models.film import Film, FilmPerson
 
 app_config = config.AppConfig()
 
 
-class FilmDetails(Film):
-    pass
+class FilmBaseApi(BaseApiModel):
+    uuid: str
+    title: str
+    imdb_rating: Optional[float]
+
+
+class FilmPersonApi(BaseApiModel):
+    uuid: str
+    full_name: str
+
+
+class FilmDetailsApi(FilmBaseApi):
+    description: Optional[str]
+    directors: Optional[list[FilmPersonApi]] = Field(default_factory=list)
+    actors: Optional[list[FilmPersonApi]] = Field(default_factory=list)
+    writers: Optional[list[FilmPersonApi]] = Field(default_factory=list)
+    genre: list[dict] = Field(default_factory=list)
 
 
 class Page:
@@ -23,22 +39,23 @@ class Page:
         self.page_number = page_number
 
 
-class FilmSortEnum(str, Enum):
-    imdb_rating_desc: str = 'imdb_rating:desc'
-    imdb_rating_desc_alias: str = '-imdb_rating'
-
-
 class FilmSort:
+    sort_values = [
+        'imdb_rating:desc',
+        '-imdb_rating',
+    ]
+
     def __init__(
-        self,
-        sort: FilmSortEnum = Query(
-            FilmSortEnum.imdb_rating_desc_alias,
-            title='Sort field',
-            description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
-        )
+            self,
+            sort: str = Query(
+                'imdb_rating:desc',
+                title='Sort field',
+                description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
+            )
     ) -> None:
-        if sort == FilmSortEnum.imdb_rating_desc_alias:
-            sort = FilmSortEnum.imdb_rating_desc
+        if sort and sort not in self.sort_values:
+            raise ValueError(f"Invalid sort field '{sort}'")
+        sort = 'imdb_rating:desc'
         self.sort = sort
 
 
@@ -64,3 +81,24 @@ class FilmQuery:
         )
     ) -> None:
         self.query = query
+
+
+def film_to_api(film: Film) -> FilmBaseApi:
+    return FilmBaseApi(
+        uuid=film.id,
+        title=film.title,
+        imdb_rating=film.imdb_rating,
+    )
+
+
+def person_to_api(person: FilmPerson) -> FilmPersonApi:
+    return FilmPersonApi(
+        uuid=person.id,
+        full_name=person.name,
+    )
+
+
+def genre_to_api(genre: dict) -> dict:
+    uuid = genre.pop('id')
+    genre.update({'uuid': uuid})
+    return genre
