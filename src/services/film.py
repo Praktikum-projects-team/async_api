@@ -6,10 +6,11 @@ from fastapi import Depends
 from orjson import orjson
 from redis.asyncio import Redis
 
+from api.v1.models_api import Page
 from core import config
 from db.elastic import get_elastic
 from db.redis import get_redis
-from models.film import Film
+from models.film import Film, FilmBase
 
 FILM_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 
@@ -52,37 +53,35 @@ class FilmService:
     async def get_all_films(
             self,
             sort: str,
-            page_size: int,
-            page_number: int,
+            page: Page,
             filtering: str
-    ) -> Optional[list[Film]]:
+    ) -> Optional[list[FilmBase]]:
 
         query = {"nested": {"path": "genre", "query": {"match": {"genre.id": filtering}}}}
         body = {"query": {"bool": {"must": [query]}}}
 
         data = await self._get_anything_from_cache()
         if data:
-            films = [Film(**row) for row in orjson.loads(data)]
+            films = [FilmBase(**row) for row in orjson.loads(data)]
         else:
-            films = await self._get_films_from_elastic(page_size, page_number, sort, body=body)
+            films = await self._get_films_from_elastic(page, sort, body=body)
             await self._put_anything_to_cache()
         return films
 
     # Поиск фильмов
     async def search_film(
             self,
-            page_size: int,
-            page_number: int,
+            page: Page,
             query: str,
             sort: str,
-    ) -> Optional[list[Film]]:
+    ) -> Optional[list[FilmBase]]:
         body = {"query": {"bool": {"must": [{"multi_match": {"query": query, "fields": ["title", "description"]}}]}}}
 
         data = await self._get_anything_from_cache()
         if data:
-            films = [Film(**row) for row in orjson.loads(data)]
+            films = [FilmBase(**row) for row in orjson.loads(data)]
         else:
-            films = await self._get_films_from_elastic(page_size, page_number, sort, body=body)
+            films = await self._get_films_from_elastic(page, sort, body=body)
             await self._put_anything_to_cache()
         return films
 
@@ -96,17 +95,16 @@ class FilmService:
 
     async def _get_films_from_elastic(
             self,
-            page_size: int,
-            page_number: int,
+            page: Page,
             sort: str = None,
             body: Union[str, dict] = None,
     ) -> Optional[list[Film]]:
-        from_ = page_size * (page_number - 1)
+        from_ = page.page_size * (page.page_number - 1)
 
         docs = await self.elastic.search(
             index=elastic_config.index_movies,
             sort=sort,
-            size=page_size,
+            size=page.page_size,
             from_=from_,
             body=body
         )

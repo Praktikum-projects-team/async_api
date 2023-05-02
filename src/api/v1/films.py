@@ -32,7 +32,7 @@ async def get_all_films(
     page: Page = Depends(),
     film_service: FilmService = Depends(get_film_service)
 ) -> list[FilmBaseApi]:
-    films = await film_service.get_all_films(sort.sort, page.page_size, page.page_number, filtration.genre)
+    films = await film_service.get_all_films(sort.sort, page, filtration.genre)
     films_for_api = [film_to_api(film) for film in films]
     return films_for_api
 
@@ -50,7 +50,7 @@ async def search_film(
     sort: FilmSort = Depends(),
     film_service: FilmService = Depends(get_film_service)
 ) -> Optional[list[FilmBaseApi]]:
-    films = await film_service.search_film(page.page_size, page.page_number, query.query, sort.sort)
+    films = await film_service.search_film(page, query.query, sort.sort)
     films_for_api = [film_to_api(film) for film in films]
     return films_for_api
 
