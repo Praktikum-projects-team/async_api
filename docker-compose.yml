@@ -58,7 +58,7 @@ services:
       - "8000:8000"
 
   etl:
-    image: hcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
+    image: ghcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
     env_file:
       - ./.env
     depends_on:

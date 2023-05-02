@@ -1,7 +1,6 @@
-from pydantic import UUID4
-from base import BaseApiModel
+from models.base import BaseApiModel
 
 
 class Genre(BaseApiModel):
-    uuid: UUID4
+    id: str
     name: str
