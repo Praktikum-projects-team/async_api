@@ -23,17 +23,17 @@ class FilmPersonApi(BaseApiModel):
     full_name: str
 
 
+class GenreApi(BaseApiModel):
+    uuid: str
+    name: str
+
+
 class FilmDetailsApi(FilmBaseApi):
     description: Optional[str]
     directors: Optional[list[FilmPersonApi]] = Field(default_factory=list)
     actors: Optional[list[FilmPersonApi]] = Field(default_factory=list)
     writers: Optional[list[FilmPersonApi]] = Field(default_factory=list)
-    genre: list[dict] = Field(default_factory=list)
-
-
-class GenreApi(BaseApiModel):
-    uuid: str
-    name: str
+    genre: list[GenreApi] = Field(default_factory=list)
 
 
 class Page:
