@@ -16,6 +16,7 @@ class GenreService:
     def __init__(self, redis: Redis, elastic: AsyncElasticsearch):
         self.redis = redis
         self.elastic = elastic
+        self.index_genre = 'genre'
 
     async def get_by_id(self, genre_id: str) -> Optional[Genre]:
         genre = await self._genre_from_cache(genre_id)
@@ -26,16 +27,30 @@ class GenreService:
             await self._put_genre_to_cache(genre)
         return genre
 
-    # Write func for returning list of all genres
-    async def get_list(self) -> Optional[list[Genre]]:
-        pass
+    async def get_genre_list(self) -> Optional[list[Genre]]:
+        body = {"query": {"match_all": {}}}
+        genres = await self._genres_from_cache()
+        if not genres:
+            genres = await self._get_genres_from_elastic(body)
+            if not genres:
+                return None
+            await self._put_genres_to_cache(genres)
+        return genres
 
     async def _get_genre_from_elastic(self, genre_id: str) -> Optional[Genre]:
         try:
             doc = await self.elastic.get('genre', genre_id)
         except NotFoundError:
             return None
-        return Genre(**doc['_source'])
+        return Genre(**doc['_source'], uuid=doc['_id'])
+
+    async def _get_genres_from_elastic(self, body) -> Optional[list[Genre]]:
+        try:
+            docs = await self.elastic.search(index=self.index_genre, body=body)
+            genres = [Genre(**doc['_source'], uuid=doc['_id']) for doc in docs['hits']['hits']]
+        except NotFoundError:
+            return None
+        return genres
 
     async def _genre_from_cache(self, genre_id: str) -> Optional[Genre]:
         data = await self.redis.get(genre_id)
@@ -45,7 +60,13 @@ class GenreService:
         return genre
 
     async def _put_genre_to_cache(self, genre: Genre):
-        await self.redis.set(genre.id, genre.json(), GENRE_CACHE_EXPIRE_IN_SECONDS)
+        await self.redis.set(str(genre.uuid), genre.json(), GENRE_CACHE_EXPIRE_IN_SECONDS)
+
+    async def _genres_from_cache(self) -> Optional[list[Genre]]:
+        pass
+
+    async def _put_genres_to_cache(self, genres: list[Genre]):
+        pass
 
 
 @lru_cache()
