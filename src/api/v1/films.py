@@ -1,13 +1,12 @@
 from http import HTTPStatus
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from api.v1.models_api import (
     FilmBaseApi,
     FilmDetailsApi,
     FilmFilter,
-    FilmQuery,
     FilmSort,
     Page,
     film_to_api,
@@ -45,12 +44,16 @@ async def get_all_films(
     response_description='Фильмы с их uuid, названием и рейтингом'
 )
 async def search_film(
-    query: FilmQuery = Depends(),
+    query: Optional[str] = Query(
+        ...,
+        title='Query field',
+        description='Query field (search by word in title and description field)'
+    ),
     page: Page = Depends(),
     sort: FilmSort = Depends(),
     film_service: FilmService = Depends(get_film_service)
 ) -> Optional[list[FilmBaseApi]]:
-    films = await film_service.search_film(page, query.query, sort.sort)
+    films = await film_service.search_film(page, query, sort.sort)
     films_for_api = [film_to_api(film) for film in films]
     return films_for_api
 

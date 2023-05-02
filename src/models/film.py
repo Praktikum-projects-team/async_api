@@ -3,6 +3,7 @@ from typing import Optional
 from pydantic import Field
 
 from models.base import BaseApiModel
+from models.genre import Genre
 
 
 class FilmBase(BaseApiModel):
@@ -21,4 +22,4 @@ class Film(FilmBase):
     directors: Optional[list[FilmPerson]] = Field(default_factory=list)
     actors: Optional[list[FilmPerson]] = Field(default_factory=list)
     writers: Optional[list[FilmPerson]] = Field(default_factory=list)
-    genre: list[dict] = Field(default_factory=list)
+    genre: list[Genre] = Field(default_factory=list)

@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional
 
 from fastapi import Query
@@ -6,6 +7,7 @@ from pydantic import Field
 from core import config
 from models.base import BaseApiModel
 from models.film import Film, FilmPerson
+from models.genre import Genre
 
 app_config = config.AppConfig()
 
@@ -29,6 +31,11 @@ class FilmDetailsApi(FilmBaseApi):
     genre: list[dict] = Field(default_factory=list)
 
 
+class GenreApi(BaseApiModel):
+    uuid: str
+    name: str
+
+
 class Page:
     def __init__(
         self,
@@ -39,23 +46,26 @@ class Page:
         self.page_number = page_number
 
 
-class FilmSort:
-    sort_values = [
-        'imdb_rating:desc',
-        '-imdb_rating',
-    ]
+class FilmSortEnum(str, Enum):
+    imdb_rating_asc: str = 'imdb_rating:asc'
+    imdb_rating_asc_alias: str = 'imdb_rating'
+    imdb_rating_desc: str = 'imdb_rating:desc'
+    imdb_rating_desc_alias: str = '-imdb_rating'
 
+
+class FilmSort:
     def __init__(
-            self,
-            sort: str = Query(
-                'imdb_rating:desc',
-                title='Sort field',
-                description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
-            )
+        self,
+        sort: FilmSortEnum = Query(
+            FilmSortEnum.imdb_rating_desc_alias,
+            title='Sort field',
+            description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
+        )
     ) -> None:
-        if sort and sort not in self.sort_values:
-            raise ValueError(f"Invalid sort field '{sort}'")
-        sort = 'imdb_rating:desc'
+        if sort == FilmSortEnum.imdb_rating_asc_alias:
+            sort = FilmSortEnum.imdb_rating_asc
+        if sort == FilmSortEnum.imdb_rating_desc_alias:
+            sort = FilmSortEnum.imdb_rating_desc
         self.sort = sort
 
 
@@ -69,18 +79,6 @@ class FilmFilter:
         )
     ) -> None:
         self.genre = genre
-
-
-class FilmQuery:
-    def __init__(
-        self,
-        query: Optional[str] = Query(
-            ...,
-            title='Query field',
-            description='Query field (search by word in title and description field)'
-        )
-    ) -> None:
-        self.query = query
 
 
 def film_to_api(film: Film) -> FilmBaseApi:
@@ -98,7 +96,8 @@ def person_to_api(person: FilmPerson) -> FilmPersonApi:
     )
 
 
-def genre_to_api(genre: dict) -> dict:
-    uuid = genre.pop('id')
-    genre.update({'uuid': uuid})
-    return genre
+def genre_to_api(genre: Genre) -> GenreApi:
+    return GenreApi(
+        uuid=genre.id,
+        name=genre.name,
+    )
