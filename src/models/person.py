@@ -1,6 +1,8 @@
-from pydantic import UUID4, Field
-from base import BaseApiModel
 from typing import Optional
+
+from pydantic import Field, UUID4
+
+from models.base import BaseApiModel
 
 
 class PersonFilms:

@@ -35,11 +35,15 @@ async def shutdown():
     await redis.redis.close()
     await elastic.es.close()
 
+
 app.include_router(films.router, prefix='/api/v1/films', tags=['films'])
+
 
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
         host=app_config.host,
         port=app_config.port,
+        log_config=LOGGING,
+        log_level=logging.DEBUG if app_config.is_debug else logging.INFO,
     )
