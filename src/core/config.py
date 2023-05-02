@@ -16,11 +16,6 @@ class AppConfig(BaseSettings):
     default_page_size: int = Field(..., env='DEFAULT_PAGE_SIZE')
     is_debug: bool = Field(..., env='IS_DEBUG')
 
-    class Config:
-        case_sensitive = False
-        env_file = "./.env"
-        env_file_encoding = "utf-8"
-
 
 class ElasticConfig(BaseSettings):
     host: str = Field(..., env='ELASTIC_HOST')
@@ -28,11 +23,6 @@ class ElasticConfig(BaseSettings):
     index_movies: str = Field(..., env='INDEX_MOVIES')
     index_person: str = Field(..., env='INDEX_PERSON')
     index_genre: str = Field(..., env='INDEX_GENRE')
-
-    class Config:
-        case_sensitive = False
-        env_file = "./.env"
-        env_file_encoding = "utf-8"
 
 
 class RedisConfig(BaseSettings):
