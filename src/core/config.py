@@ -38,8 +38,4 @@ class ElasticConfig(BaseSettings):
 class RedisConfig(BaseSettings):
     host: str = Field(..., env='REDIS_HOST')
     port: int = Field(..., env='REDIS_PORT')
-
-    class Config:
-        case_sensitive = False
-        env_file = "./.env"
-        env_file_encoding = "utf-8"
+    password: str = Field(..., env='REDIS_PASSWORD')
