@@ -9,9 +9,7 @@ from models.base import BaseApiModel
 from models.film import Film, FilmPerson
 from models.genre import Genre
 from models.person import PersonBase
-from dotenv import load_dotenv
 
-load_dotenv()
 
 app_config = config.AppConfig()
 
