@@ -1,4 +1,3 @@
-import logging
 from typing import Any, Union, Optional
 
 from elasticsearch import AsyncElasticsearch

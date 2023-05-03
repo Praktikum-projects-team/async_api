@@ -1,5 +1,4 @@
 import abc
-import logging
 from typing import Any, Optional
 
 from core.config import CacheTTLConfig
