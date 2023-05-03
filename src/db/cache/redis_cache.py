@@ -34,12 +34,11 @@ class RedisCache(AbstractCache):
     async def get_cache(
             self,
             /,
-            key_name: str,
+            key: str,
             key_extra: dict[str: Any] = None,
     ) -> Union[dict, list[dict]]:
         try:
-            key = self.get_key(key_name=key_name, key_extra=key_extra)
-            return await orjson.loads(self.redis.get(name=key))
+            return orjson.loads(await self.redis.get(name=key))
         except Exception as exc:
             logging.error(f'could not get cache {exc}')
 

@@ -25,7 +25,7 @@ class AbstractCache(abc.ABC):
     async def get_cache(
             self,
             /,
-            key_name: str,
+            key: str,
             key_extra: dict[str: Any] = None,
     ) -> Union[dict, list[dict]]:
         raise NotImplementedError

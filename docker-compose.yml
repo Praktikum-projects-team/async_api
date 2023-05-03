@@ -32,7 +32,7 @@ services:
       timeout: 30s
       retries: 2
     volumes:
-      - $HOME/elasticsearch/data:/usr/share/elasticsearch/data
+      - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
     depends_on:
       - postgres
 
@@ -44,7 +44,7 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
-      - $HOME/redis/data:/usr/share/redis/data
+      - $HOME/redis/data:/var/lib/redis/data
 
   fastapi:
     container_name: fastapi

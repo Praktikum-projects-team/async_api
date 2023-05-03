@@ -15,15 +15,13 @@ services:
       timeout: 30s
       retries: 2
     volumes:
-      - $HOME/elasticsearch/data:/usr/share/elasticsearch/data
-    depends_on:
-      - postgres
+      - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
 
   redis:
     container_name: redis
     image: redis:7
     volumes:
-      - $HOME/redis/data:/usr/share/redis/data
+      - $HOME/redis/data:/var/lib/redis/data
     ports:
       - "6379:6379"
 
@@ -37,4 +35,3 @@ services:
       - elastic
     ports:
       - "8000:8000"
-

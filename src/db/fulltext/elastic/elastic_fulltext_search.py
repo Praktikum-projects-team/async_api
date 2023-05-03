@@ -1,3 +1,4 @@
+import logging
 from typing import Any, Union, Optional
 
 from elasticsearch import AsyncElasticsearch
@@ -36,7 +37,6 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
             from_=page_from,
             body=body,
         )
-
         return [doc['_source'] for doc in docs['hits']['hits']]
 
 
