@@ -116,7 +116,7 @@ def person_to_api(person: FilmPerson) -> FilmPersonApi:
 def person_to_api_detail(person: Person) -> PersonApi:
     person_films = []
     for film in person.films:
-        person_films.append(PersonFilmsApi(role=film.roles, uuid=film.id))
+        person_films.append(PersonFilmsApi(role=film.role, uuid=film.id))
     return PersonApi(
         uuid=person.id,
         full_name=person.full_name,

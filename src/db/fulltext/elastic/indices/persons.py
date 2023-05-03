@@ -27,7 +27,7 @@ class ESPersonIndex(AbstractPersonIndex):
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
     ) -> list[Person]:
-        query = [{"multi_match": {"query": raw_query, "fields": ["full_name"]}}]
+        query = [{"multi_match": {"query": raw_query, "fields": ["full_name"]}}] if raw_query else None
         persons = await self._search_persons_by_query(
             query=query,
             page_size=page_size,
