@@ -11,16 +11,6 @@ from models.person import Person
 
 class ESPersonIndex(AbstractPersonIndex):
 
-    def _get_search_query(self, raw_query: str) -> list[dict]:
-        if not raw_query:
-            return None
-        return [{"multi_match": {"query": raw_query, "fields": ["title", "description"]}}]
-
-    def _get_filter_query(self, raw_filter: str) -> list[dict]:
-        if not raw_filter:
-            return None
-        return [{"nested": {"path": "genre", "query": {"match": {"genre.id": raw_filter}}}}]
-
     async def get_persons(
             self,
             raw_query: Optional[str] = None,
