@@ -1,27 +1,10 @@
 version: '3'
 services:
-  postgres:
-    container_name: postgres
-    image: "postgres:13"
-    env_file:
-      - ./.env
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-    volumes:
-      - ./movies_pg_dump.sql:/docker-entrypoint-initdb.d/movies_pg_dump.sql
-      - $HOME/postgresql/data:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U app -d movies_database" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: always
-
   elastic:
     container_name: elastic
     image: ghcr.io/yp-middle-python-24/elasticsearch:8.7.0
+    ports:
+      - "9200:9200"
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -39,12 +22,10 @@ services:
   redis:
     container_name: redis
     image: redis:7
-    env_file:
-      - ./.env
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
       - $HOME/redis/data:/usr/share/redis/data
+    ports:
+      - "6379:6379"
 
   fastapi:
     container_name: fastapi
@@ -57,10 +38,3 @@ services:
     ports:
       - "8000:8000"
 
-  etl:
-    image: ghcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
-    env_file:
-      - ./.env
-    depends_on:
-      - postgres
-      - elastic

@@ -4,29 +4,23 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, UUID4
 from services.genre import GenreService, get_genre_service
 from src.models.genre import Genre
+from api.v1.models_api import GenreApi, genre_to_api, Page
 
 router = APIRouter()
 
 
-# class Genre(BaseModel):
-#     uuid: UUID4
-#     name: str
-
-
-@router.get('/{genre_id}', response_model=Genre)
+@router.get('/{genre_id}', response_model=GenreApi)
 async def genre_details(genre_id: str, genre_service: GenreService = Depends(get_genre_service)) -> Genre:
     genre = await genre_service.get_by_id(genre_id)
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='genre not found')
-    return Genre(uuid=genre.uuid, name=genre.name)
+    return genre_to_api(genre)
 
 
-@router.get('/', response_model=list[Genre])
-async def genre_list(genre_service: GenreService = Depends(get_genre_service)) -> list[Genre]:
-    genres = await genre_service.get_genre_list()
+@router.get('/', response_model=list[GenreApi])
+async def genre_list(genre_service: GenreService = Depends(get_genre_service), page: Page = Depends()) -> list[Genre]:
+    genres = await genre_service.get_genre_list(page)
     if not genres:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='genres not found')
-    genres_list = []
-    for genre in genres:
-        genres_list.append(Genre(uuid=genre.uuid, name=genre.name))
+    genres_list = [genre_to_api(genre) for genre in genres]
     return genres_list

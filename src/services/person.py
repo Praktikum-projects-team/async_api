@@ -7,9 +7,15 @@ from redis.asyncio import Redis
 
 from db.elastic import get_elastic
 from db.redis import get_redis
-from src.models.person import PersonBase
+from src.models.person import PersonBase, PersonFilms
+from src.models.film import FilmBase
+from src.services.film import FilmService
+from core import config
+from api.v1.models_api import Page
 
 PERSON_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
+
+elastic_config = config.ElasticConfig()
 
 
 class PersonService:
@@ -23,19 +29,49 @@ class PersonService:
             person = await self._get_person_from_elastic(person_id)
             if not person:
                 return None
-            await self._put_genre_to_cache(person)
+            await self._put_person_to_cache(person)
         return person
 
-    # Write func for returning list of all persons
-    async def get_list(self) -> Optional[list[PersonBase]]:
-        pass
+    async def get_persons_list(self, page: Page) -> Optional[list[PersonBase]]:
+        body = {"query": {"match_all": {}}}
+        persons = await self._persons_from_cache()
+        if not persons:
+            persons = await self._get_persons_from_elastic(body, page)
+            if not persons:
+                return None
+            await self._put_persons_to_cache(persons)
+        return persons
+
+    async def search_persons(self, query: str, page: Page) -> Optional[list[PersonBase]]:
+        body = {"query": {"bool": {"must": [{"multi_match": {"query": query, "fields": ["full_name"]}}]}}}
+        persons = await self._persons_from_cache()
+        if not persons:
+            persons = await self._get_persons_from_elastic(body, page)
+            if not persons:
+                return None
+            await self._put_persons_to_cache(persons)
+        return persons
 
     async def _get_person_from_elastic(self, person_id: str) -> Optional[PersonBase]:
         try:
-            doc = await self.elastic.get('person', person_id)
+            doc = await self.elastic.get(elastic_config.index_person, person_id)
         except NotFoundError:
             return None
-        return PersonBase(**doc['_source'])
+        person_films = [PersonFilms(roles=film['role'], id=film['id']) for film in doc['_source']['films']]
+        return PersonBase(id=doc['_source']['id'], full_name=doc['_source']['full_name'], films=person_films)
+
+    async def _get_persons_from_elastic(self, body, page) -> Optional[list[PersonBase]]:
+        try:
+            from_ = page.page_size * (page.page_number - 1)
+            docs = await self.elastic.search(index=elastic_config.index_person, body=body, from_=from_)
+            persons = []
+            for doc in docs['hits']['hits']:
+                person_films = [PersonFilms(roles=film['role'], id=film['id']) for film in doc['_source']['films']]
+                persons.append(
+                    PersonBase(id=doc['_source']['id'], full_name=doc['_source']['full_name'], films=person_films))
+        except NotFoundError:
+            return None
+        return persons
 
     async def _person_from_cache(self, person_id: str) -> Optional[PersonBase]:
         data = await self.redis.get(person_id)
@@ -44,8 +80,14 @@ class PersonService:
         person = PersonBase.parse_raw(data)
         return person
 
-    async def _put_genre_to_cache(self, person: PersonBase):
-        await self.redis.set(person.id, person.json(), PERSON_CACHE_EXPIRE_IN_SECONDS)
+    async def _put_person_to_cache(self, person: PersonBase):
+        await self.redis.set(str(person.id), person.json(), PERSON_CACHE_EXPIRE_IN_SECONDS)
+
+    async def _persons_from_cache(self) -> Optional[list[PersonBase]]:
+        pass
+
+    async def _put_persons_to_cache(self, persons: list[PersonBase]):
+        pass
 
 
 @lru_cache()
