@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 from typing import Optional, Any, Union, Iterable
 
@@ -14,29 +15,21 @@ class RedisCache(AbstractCache):
     def __init__(self, redis: Redis):
         self.redis = redis
 
-    def get_key(self, key_name: str, key_extra: dict[str: Any]):
-        if not key_extra:
-            return key_name
-        return key_name + str(sorted(key_extra.items()))
-
-    def _get_value_json(self, value: Union[BaseApiModel, list[BaseApiModel]]) -> bytes:
-        if not isinstance(value, Iterable):
-            return value.json()
-
-        values = [item.json() for item in value]
-        return orjson.dumps(values)
+    def get_key(self, **kwargs):
+        return str(sorted(kwargs.items()))
 
     async def set_cache(
             self,
             /,
-            key_name: str,
-            value: Union[BaseApiModel, list[BaseApiModel]],
+            key: str,
+            value: Union[dict, list[dict]],
             key_extra: dict[str: Any] = None,
             ttl: int = None
     ):
-        key = self.get_key(key_name=key_name, key_extra=key_extra)
-        value_json = self._get_value_json(value)
-        await self.redis.set(name=key, value=value_json, ex=ttl)
+        try:
+            await self.redis.set(name=key, value=orjson.dumps(value), ex=ttl)
+        except Exception as exc:
+            logging.error(f'could not set cache {exc}')
 
     async def get_cache(
             self,
@@ -44,8 +37,11 @@ class RedisCache(AbstractCache):
             key_name: str,
             key_extra: dict[str: Any] = None,
     ) -> Union[dict, list[dict]]:
-        key = self.get_key(key_name=key_name, key_extra=key_extra)
-        return await orjson.loads(self.redis.get(name=key))
+        try:
+            key = self.get_key(key_name=key_name, key_extra=key_extra)
+            return await orjson.loads(self.redis.get(name=key))
+        except Exception as exc:
+            logging.error(f'could not get cache {exc}')
 
 
 async def get_redis_cache(redis: Redis = Depends(get_redis)) -> RedisCache:

@@ -7,11 +7,15 @@ from models.base import BaseApiModel
 class AbstractCache(abc.ABC):
 
     @abc.abstractmethod
+    def get_key(self, **kwargs) -> str:
+        raise NotImplementedError
+
+    @abc.abstractmethod
     async def set_cache(
             self,
             /,
-            key_name: str,
-            value: Union[BaseApiModel, list[BaseApiModel]],
+            key: str,
+            value: Union[dict, list[dict]],
             key_extra: dict[str: Any] = None,
             ttl: int = None
     ):
