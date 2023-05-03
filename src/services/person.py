@@ -7,9 +7,7 @@ from redis.asyncio import Redis
 
 from db.elastic import get_elastic
 from db.redis import get_redis
-from src.models.person import PersonBase, PersonFilms
-from src.models.film import FilmBase
-from src.services.film import FilmService
+from models.person import PersonBase, PersonFilms
 from core import config
 from api.v1.models_api import Page
 

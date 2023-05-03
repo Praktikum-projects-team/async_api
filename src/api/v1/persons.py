@@ -1,12 +1,9 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query
-from pydantic import BaseModel, UUID4, Field
 from services.person import PersonService, get_person_service
 from services.film import FilmService, get_film_service
 from typing import Optional
-from src.models.film import FilmBase
-from src.models.person import PersonBase, PersonFilms
 from api.v1.models_api import (
     FilmPersonApi, PersonApi, FilmFilter, FilmSort, FilmBaseApi, person_to_api_detail,
     film_to_api, Page)
@@ -15,8 +12,8 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[PersonApi])
-async def person_list(person_service: PersonService = Depends(get_person_service), page: Page = Depends()) -> list[
-    PersonApi]:
+async def person_list(person_service: PersonService = Depends(get_person_service),
+                      page: Page = Depends()) -> list[PersonApi]:
     persons = await person_service.get_persons_list(page)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='persons not found')
@@ -41,7 +38,7 @@ async def search_persons(
 
 
 @router.get('/{person_id}', response_model=PersonApi)
-async def person_details(person_id: str, person_service: PersonService = Depends(get_person_service)) -> PersonBase:
+async def person_details(person_id: str, person_service: PersonService = Depends(get_person_service)) -> PersonApi:
     person = await person_service.get_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='person not found')
