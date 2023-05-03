@@ -10,7 +10,7 @@ class PersonFilms:
     id: str
 
 
-class PersonBase(BaseApiModel):
+class Person(BaseApiModel):
     id: str
     full_name: str
     films: Optional[list[PersonFilms]] = Field(default_factory=list)

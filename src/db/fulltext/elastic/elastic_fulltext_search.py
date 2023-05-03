@@ -19,9 +19,9 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
             self,
             index_name: str,
             query: Union[list[dict], str],
-            sort: Optional[str],
-            page_size: Optional[int],
-            page_from: Optional[int],
+            sort: Optional[str] = None,
+            page_size: Optional[int] = None,
+            page_from: Optional[int] = None,
     ) -> list[dict]:
         body = {"query": {"bool": {"must": query}}} if query else None
 

@@ -8,7 +8,7 @@ from core import config
 from models.base import BaseApiModel
 from models.film import Film, FilmPerson
 from models.genre import Genre
-from models.person import PersonBase
+from models.person import Person
 
 
 app_config = config.AppConfig()
@@ -113,7 +113,7 @@ def person_to_api(person: FilmPerson) -> FilmPersonApi:
     )
 
 
-def person_to_api_detail(person: PersonBase) -> PersonApi:
+def person_to_api_detail(person: Person) -> PersonApi:
     person_films = []
     for film in person.films:
         person_films.append(PersonFilmsApi(role=film.roles, uuid=film.id))
