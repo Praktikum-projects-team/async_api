@@ -64,10 +64,19 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
             sort: Optional[str],
             page_size: Optional[int],
             page_from: Optional[int],
-    ):  # only works with genres for now
+    ) -> [list[Film]]:  # only works with genres for now
         return await self._search_films_by_query(
             query=self._get_filter_query(raw_filter),
             sort=sort,
             page_size=page_size,
             page_from=page_from,
         )
+
+    async def get_films_by_person(
+            self,
+            person_id: str,
+            sort: Optional[str],
+            page_size: Optional[int],
+            page_from: Optional[int],
+    ) -> [list[Film]]:
+        raise NotImplementedError
