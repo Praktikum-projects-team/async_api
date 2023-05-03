@@ -20,9 +20,7 @@ class AbstractFulltextSearch(abc.ABC):
         cache_key = self.cache.get_key(index_name=index_name, id=id)
         doc = await self.cache.get_cache(cache_key)
         if doc:
-            logging.error('!!!!!!!!!!!!!!!! found in cache !!!!!!!!!!!!!!!!')
         if not doc:
-            logging.error('!!!!!!!!!!!!!!!! not in cache !!!!!!!!!!!!!!!!')
             doc = await self.get_by_id_without_cache(index_name=index_name, id=id)
             await self.cache.set_cache(key=cache_key, value=doc, ttl=self.cache_ttl_in_seconds)
         return doc
@@ -51,9 +49,7 @@ class AbstractFulltextSearch(abc.ABC):
         )
         doc = await self.cache.get_cache(cache_key)
         if doc:
-            logging.error('!!!!!!!!!!!!!!!! found in cache !!!!!!!!!!!!!!!!')
         if not doc:
-            logging.error('!!!!!!!!!!!!!!!! not in cache !!!!!!!!!!!!!!!!')
             doc = await self.search_many_without_cache(
                 index_name=index_name, query=query, sort=sort, page_size=page_size, page_from=page_from
             )
