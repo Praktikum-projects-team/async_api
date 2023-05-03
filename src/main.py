@@ -14,8 +14,13 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+app_config = config.AppConfig()
+elastic_config = config.ElasticConfig()
+redis_config = config.RedisConfig()
+
+
 app = FastAPI(
-    title=config.PROJECT_NAME,
+    title=app_config.project_name,
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
@@ -24,8 +29,8 @@ app = FastAPI(
 
 @app.on_event('startup')
 async def startup():
-    redis.redis = Redis(host=config.REDIS_HOST, port=config.REDIS_PORT)
-    elastic.es = AsyncElasticsearch(hosts=[f'{config.ELASTIC_HOST}:{config.ELASTIC_PORT}'])
+    redis.redis = Redis(host=redis_config.host, port=redis_config.port, password=redis_config.password)
+    elastic.es = AsyncElasticsearch(hosts=[f'{elastic_config.host}:{elastic_config.port}'])
 
 
 @app.on_event('shutdown')
@@ -33,13 +38,17 @@ async def shutdown():
     await redis.redis.close()
     await elastic.es.close()
 
+
 app.include_router(films.router, prefix='/api/v1/films', tags=['films'])
 app.include_router(genres.router, prefix='/api/v1/genres', tags=['genres'])
 app.include_router(persons.router, prefix='/api/v1/persons', tags=['persons'])
 
+
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
-        host='0.0.0.0',
-        port=8000,
+        host=app_config.host,
+        port=app_config.port,
+        log_config=LOGGING,
+        log_level=logging.DEBUG if app_config.is_debug else logging.INFO,
     )

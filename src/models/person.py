@@ -1,9 +1,11 @@
-from pydantic import UUID4, Field
-from models.base import BaseApiModel
 from typing import Optional
 
+from pydantic import Field, UUID4
 
-class PersonFilms(BaseApiModel):
+from models.base import BaseApiModel
+
+
+class PersonFilms:
     roles: list[str]
     uuid: UUID4
 

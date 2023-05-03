@@ -1,0 +1,121 @@
+{
+	"info": {
+		"_postman_id": "de4170eb-10d7-4412-b5e8-ad12a08ccd75",
+		"name": "Movies Fast Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5319546"
+	},
+	"item": [
+		{
+			"name": "Список всех фильмов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/films?sort=-imdb_rating&page_size=5&page_number=2&genre=3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"films"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "-imdb_rating"
+						},
+						{
+							"key": "page_size",
+							"value": "5"
+						},
+						{
+							"key": "page_number",
+							"value": "2"
+						},
+						{
+							"key": "genre",
+							"value": "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Поиск фильмов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/films/search?page_size=5&page_number=1&query=one",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"films",
+						"search"
+					],
+					"query": [
+						{
+							"key": "page_size",
+							"value": "5"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						},
+						{
+							"key": "query",
+							"value": "one"
+						},
+						{
+							"key": "sort",
+							"value": "-imdb_rating",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Один фильм",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/v1/films/00af52ec-9345-4d66-adbe-50eb917f463a",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"v1",
+						"films",
+						"00af52ec-9345-4d66-adbe-50eb917f463a"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
