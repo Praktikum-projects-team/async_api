@@ -29,3 +29,11 @@ class RedisConfig(BaseSettings):
     host: str = Field(..., env='REDIS_HOST')
     port: int = Field(..., env='REDIS_PORT')
     password: str = Field(..., env='REDIS_PASSWORD')
+
+
+class CacheTTLConfig(BaseSettings):
+    default_ttl: int = 60 * 30
+    movies_ttl: int = 60 * 5
+    persons_ttl: int = 60 * 5
+    genres_ttl: int = 60 * 5
+
