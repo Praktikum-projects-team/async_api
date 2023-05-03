@@ -6,13 +6,14 @@ from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
 from redis.asyncio import Redis
 
+from db.cache.abstract_cache import AbstractCache
 from db.elastic import get_elastic
 from db.redis import get_redis
 from models.base import BaseApiModel
 from models.film import Film
 
 
-class CacheService:
+class RedisCache(AbstractCache):
     def __init__(self, redis: Redis):
         self.redis = redis
 
@@ -21,7 +22,7 @@ class CacheService:
             return key_name
         return key_name + str(sorted(key_extra.items()))
 
-    def get_value_json(self, value: Union[BaseApiModel, list[BaseApiModel]]) -> bytes:
+    def _get_value_json(self, value: Union[BaseApiModel, list[BaseApiModel]]) -> bytes:
         if not isinstance(value, Iterable):
             return value.json()
 
@@ -37,7 +38,7 @@ class CacheService:
             ttl: int = None
     ):
         key = self.get_key(key_name=key_name, key_extra=key_extra)
-        value_json = self.get_value_json(value)
+        value_json = self._get_value_json(value)
         await self.redis.set(name=key, value=value_json, ex=ttl)
 
     async def get_cache(
@@ -50,5 +51,5 @@ class CacheService:
         return await orjson.loads(self.redis.get(name=key))
 
 
-async def get_cache_service(redis: Redis = Depends(get_redis)) -> CacheService:
-    return CacheService(redis)
+async def get_redis_cache(redis: Redis = Depends(get_redis)) -> RedisCache:
+    return RedisCache(redis)
