@@ -40,4 +40,3 @@ def get_person_service(
         person_index: AbstractPersonIndex = Depends(get_elastic_person_index),
 ) -> PersonService:
     return PersonService(person_index)
-
