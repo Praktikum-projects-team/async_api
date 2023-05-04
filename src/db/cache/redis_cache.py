@@ -1,6 +1,5 @@
 import logging
-from functools import lru_cache
-from typing import Optional, Any, Union, Iterable
+from typing import Any, Union
 
 import orjson
 from fastapi import Depends
@@ -8,7 +7,6 @@ from redis.asyncio import Redis
 
 from db.cache.abstract_cache import AbstractCache
 from db.redis import get_redis
-from models.base import BaseApiModel
 
 
 class RedisCache(AbstractCache):

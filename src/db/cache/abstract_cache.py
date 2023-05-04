@@ -1,8 +1,6 @@
 import abc
 from typing import Any, Union
 
-from models.base import BaseApiModel
-
 
 class AbstractCache(abc.ABC):
 
