@@ -32,7 +32,7 @@ services:
       timeout: 30s
       retries: 2
     volumes:
-      - $HOME/elasticsearch/data:/usr/share/elasticsearch/data
+      - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
     depends_on:
       - postgres
 
@@ -44,7 +44,7 @@ services:
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
     volumes:
-      - $HOME/redis/data:/usr/share/redis/data
+      - $HOME/redis/data:/var/lib/redis/data
 
   fastapi:
     container_name: fastapi
@@ -54,8 +54,6 @@ services:
     depends_on:
       - redis
       - elastic
-    ports:
-      - "8000:8000"
 
   etl:
     image: ghcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
@@ -64,3 +62,13 @@ services:
     depends_on:
       - postgres
       - elastic
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/configs:/etc/nginx/conf.d:ro
+    depends_on:
+      - fastapi
+    ports:
+      - "80:80"
