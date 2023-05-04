@@ -1,15 +1,11 @@
 from functools import lru_cache
 from typing import Optional
 
-from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
-from redis.asyncio import Redis
 
-from db.elastic import get_elastic
-from db.redis import get_redis
 from models.genre import Genre
 from core import config
-from api.v1.models_api import Page
+from api.v1.utils import Page
 from db.fulltext.abstract_indices.genres import AbstractGenreIndex
 from db.fulltext.elastic.indices.genres import get_elastic_genre_index
 

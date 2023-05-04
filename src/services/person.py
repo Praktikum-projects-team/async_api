@@ -1,17 +1,13 @@
 from functools import lru_cache
 from typing import Optional
 
-from elasticsearch import AsyncElasticsearch, NotFoundError
 from fastapi import Depends
-from redis.asyncio import Redis
 
-from db.elastic import get_elastic
 from db.fulltext.abstract_indices.persons import AbstractPersonIndex
 from db.fulltext.elastic.indices.persons import get_elastic_person_index
-from db.redis import get_redis
-from models.person import Person, PersonFilms
+from models.person import Person
 from core import config
-from api.v1.models_api import Page
+from api.v1.utils import Page
 
 PERSON_CACHE_EXPIRE_IN_SECONDS = 60 * 5  # 5 минут
 

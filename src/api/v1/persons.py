@@ -4,9 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from services.person import PersonService, get_person_service
 from services.film import FilmService, get_film_service
 from typing import Optional
-from api.v1.models_api import (
-    FilmPersonApi, PersonApi, FilmFilter, FilmSort, FilmBaseApi, person_to_api_detail,
-    film_to_api, Page)
+from api.v1.models.persons import PersonApi, person_to_api_detail
+from api.v1.models.films import FilmBaseApi, film_to_api
+from api.v1.utils import Page, FilmSort, FilmFilter
 
 router = APIRouter()
 

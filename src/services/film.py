@@ -1,17 +1,11 @@
 from functools import lru_cache
-from typing import Optional, Union
+from typing import Optional
 
 from fastapi import Depends
-from orjson import orjson
-from redis.asyncio import Redis
 
-from api.v1.models_api import Page
 from core import config
-from db.elastic import get_elastic
-from db.redis import get_redis
-from models.film import Film, FilmBase
 
-from api.v1.models_api import Page
+from api.v1.utils import Page
 from db.fulltext.abstract_indices.films_index import AbstractFilmIndex
 from db.fulltext.elastic.indices.films import get_elastic_film_index
 from models.film import Film, FilmBase
