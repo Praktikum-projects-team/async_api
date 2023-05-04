@@ -37,3 +37,4 @@ class CacheTTLConfig(BaseSettings):
     persons_ttl: int = 60 * 5
     genres_ttl: int = 60 * 5
 
+
