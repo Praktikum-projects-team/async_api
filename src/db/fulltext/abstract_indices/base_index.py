@@ -1,3 +1,4 @@
+import abc
 from typing import Optional, Any
 
 from elasticsearch import NotFoundError
@@ -7,7 +8,7 @@ from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from core.base_model import OrjsonBaseModel
 
 
-class BaseFulltextIndex:
+class AbstractFulltextIndex(abc.ABC):
 
     def __init__(self, searcher: AbstractFulltextSearch, index_name: str, cache_ttl: Optional[int] = None):
         self.searcher = searcher

@@ -9,16 +9,15 @@ from api.v1.utils import Page
 from db.fulltext.abstract_indices.films_index import AbstractFilmIndex
 from db.fulltext.elastic.indices.films import get_elastic_film_index
 from models.film import Film, FilmBase
+from services.base_service import BaseService
 
 elastic_config = config.ElasticConfig()
 
 
-class FilmService:
-    def __init__(self, film_index: AbstractFilmIndex):
-        self.film_index = film_index
-
-    async def get_by_id(self, film_id: str) -> Optional[Film]:
-        return await self.film_index.get_by_id(film_id)
+class FilmService(BaseService):
+    def __init__(self, index: AbstractFilmIndex):
+        super().__init__(index)
+        self.index = index
 
     async def get_all_films(
             self,
@@ -26,22 +25,8 @@ class FilmService:
             page: Page,
             filtering: str
     ) -> Optional[list[FilmBase]]:
-        films = await self.film_index.get_films_by_filter(
+        films = await self.index.get_films_by_filter(
             raw_filter=filtering,
-            sort=sort,
-            page_size=page.page_size,
-            page_from=page.page_from,
-        )
-        return films
-
-    async def search_film(
-            self,
-            page: Page,
-            query: str,
-            sort: str,
-    ) -> Optional[list[FilmBase]]:
-        films = await self.film_index.search(
-            raw_query=query,
             sort=sort,
             page_size=page.page_size,
             page_from=page.page_from,
@@ -54,7 +39,7 @@ class FilmService:
             page: Page,
             filtration: str
     ) -> Optional[list[Film]]:
-        films = await self.film_index.get_films_by_person(
+        films = await self.index.get_films_by_person(
             person_id=filtration,
             sort=sort,
             page_size=page.page_size,

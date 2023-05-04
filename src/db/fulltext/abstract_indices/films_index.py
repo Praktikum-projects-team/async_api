@@ -3,11 +3,11 @@ from typing import Any, Optional
 
 from elasticsearch import NotFoundError
 
-from db.fulltext.abstract_indices.base_index import BaseFulltextIndex
+from db.fulltext.abstract_indices.base_index import AbstractFulltextIndex
 from models.film import Film
 
 
-class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
+class AbstractFilmIndex(abc.ABC, AbstractFulltextIndex):
     @property
     def model(self) -> type(Film):
         return Film
