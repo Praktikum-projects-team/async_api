@@ -50,12 +50,25 @@ class BaseFulltextIndex:
     async def search(
             self,
             raw_query: str,
-            sort: Optional[str],
-            page_size: Optional[int],
-            page_from: Optional[int],
+            sort: Optional[str] = None,
+            page_size: Optional[int] = None,
+            page_from: Optional[int] = None,
     ) -> list[OrjsonBaseModel]:
         return await self._search_by_query(
             query=self._get_search_query(raw_query),
+            sort=sort,
+            page_size=page_size,
+            page_from=page_from,
+        )
+
+    async def get_all(
+            self,
+            sort: Optional[str] = None,
+            page_size: Optional[int] = None,
+            page_from: Optional[int] = None,
+    ) -> list[OrjsonBaseModel]:
+        return await self._search_by_query(
+            query=None,
             sort=sort,
             page_size=page_size,
             page_from=page_from,

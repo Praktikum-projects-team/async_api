@@ -16,20 +16,6 @@ class ESPersonIndex(AbstractPersonIndex):
             return None
         return [{"multi_match": {"query": raw_query, "fields": ["full_name"]}}]
 
-    async def get_persons(
-            self,
-            raw_query: Optional[str] = None,
-            page_size: Optional[int] = None,
-            page_from: Optional[int] = None,
-    ) -> list[Person]:
-        query = self._get_search_query(raw_query)
-        persons = await self._search_by_query(
-            query=query,
-            page_size=page_size,
-            page_from=page_from,
-        )
-        return persons
-
 
 def get_elastic_person_index(
         es_searcher: AbstractFulltextSearch = Depends(get_elastic_fulltext_search)

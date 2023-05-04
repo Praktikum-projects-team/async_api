@@ -11,11 +11,3 @@ class AbstractPersonIndex(abc.ABC, BaseFulltextIndex):
     @property
     def model(self) -> type(Person):
         return Person
-
-    async def get_persons(
-            self,
-            raw_query: Optional[str] = None,
-            page_size: Optional[int] = None,
-            page_from: Optional[int] = None,
-    ) -> list[Person]:
-        raise NotImplementedError
