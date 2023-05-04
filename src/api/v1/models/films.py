@@ -5,11 +5,11 @@ from pydantic import Field
 
 from api.v1.models.persons import PersonBaseApi
 from api.v1.models.genres import GenreApi
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 from models.film import Film, FilmPerson
 
 
-class FilmBaseApi(BaseApiModel):
+class FilmBaseApi(OrjsonBaseModel):
     uuid: UUID
     title: str
     imdb_rating: Optional[float]

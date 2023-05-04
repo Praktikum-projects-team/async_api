@@ -3,16 +3,16 @@ from uuid import UUID
 
 from pydantic import Field
 
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 from models.person import Person
 
 
-class PersonBaseApi(BaseApiModel):
+class PersonBaseApi(OrjsonBaseModel):
     uuid: UUID
     full_name: str
 
 
-class PersonFilmsApi(BaseApiModel):
+class PersonFilmsApi(OrjsonBaseModel):
     role: list[str]
     uuid: UUID
 

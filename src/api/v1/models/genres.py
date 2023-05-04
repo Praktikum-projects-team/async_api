@@ -1,10 +1,10 @@
 from uuid import UUID
 
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 from models.genre import Genre
 
 
-class GenreApi(BaseApiModel):
+class GenreApi(OrjsonBaseModel):
     uuid: UUID
     name: str
 

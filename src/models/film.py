@@ -2,17 +2,17 @@ from typing import Optional
 
 from pydantic import Field
 
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 from models.genre import Genre
 
 
-class FilmBase(BaseApiModel):
+class FilmBase(OrjsonBaseModel):
     id: str
     title: str
     imdb_rating: Optional[float]
 
 
-class FilmPerson(BaseApiModel):
+class FilmPerson(OrjsonBaseModel):
     id: str
     name: str
 

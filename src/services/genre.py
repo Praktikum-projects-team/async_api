@@ -36,6 +36,7 @@ class GenreService:
 
 
 @lru_cache()
-def get_genre_service(genre_index: AbstractGenreIndex = Depends(get_elastic_genre_index),
+def get_genre_service(
+        genre_index: AbstractGenreIndex = Depends(get_elastic_genre_index),
 ) -> GenreService:
     return GenreService(genre_index)

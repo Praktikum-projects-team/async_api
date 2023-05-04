@@ -1,6 +1,6 @@
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 
 
-class Genre(BaseApiModel):
+class Genre(OrjsonBaseModel):
     id: str
     name: str
