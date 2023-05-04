@@ -28,6 +28,9 @@ class BaseFulltextIndex:
             return None
         return self.model(**obj)
 
+    def _get_search_query(self, raw_query: str) -> list[dict]:
+        raise NotImplementedError
+
     async def _search_by_query(
             self,
             query: Any,
@@ -43,3 +46,17 @@ class BaseFulltextIndex:
             page_from=page_from,
         )
         return [self.model(**obj) for obj in objects]
+
+    async def search(
+            self,
+            raw_query: str,
+            sort: Optional[str],
+            page_size: Optional[int],
+            page_from: Optional[int],
+    ) -> list[OrjsonBaseModel]:
+        return await self._search_by_query(
+            query=self._get_search_query(raw_query),
+            sort=sort,
+            page_size=page_size,
+            page_from=page_from,
+        )

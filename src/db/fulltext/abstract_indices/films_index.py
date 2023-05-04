@@ -12,23 +12,6 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
     def model(self) -> type(Film):
         return Film
 
-    def _get_search_query(self, raw_query: str) -> list[dict]:
-        raise NotImplementedError
-
-    async def search_films(
-            self,
-            raw_query: str,
-            sort: Optional[str],
-            page_size: Optional[int],
-            page_from: Optional[int],
-    ) -> list[Film]:
-        return await self._search_by_query(
-            query=self._get_search_query(raw_query),
-            sort=sort,
-            page_size=page_size,
-            page_from=page_from,
-        )
-
     def _get_filter_query(self, raw_filter: str) -> list[dict]:
         raise NotImplementedError
 

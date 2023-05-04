@@ -40,7 +40,7 @@ class FilmService:
             query: str,
             sort: str,
     ) -> Optional[list[FilmBase]]:
-        films = await self.film_index.search_films(
+        films = await self.film_index.search(
             raw_query=query,
             sort=sort,
             page_size=page.page_size,

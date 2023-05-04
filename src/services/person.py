@@ -27,7 +27,7 @@ class PersonService:
         return persons
 
     async def search_persons(self, query: str, page: Page) -> Optional[list[Person]]:
-        persons = await self.person_index.search_persons(
+        persons = await self.person_index.search(
             raw_query=query,
             page_size=page.page_size,
             page_from=page.page_from

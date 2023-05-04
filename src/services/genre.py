@@ -27,7 +27,7 @@ class GenreService:
         return genres
 
     async def search_genres(self, query: str, page: Page) -> Optional[list[Genre]]:
-        genres = await self.genre_index.search_genres(
+        genres = await self.genre_index.search(
             raw_query=query,
             page_size=page.page_size,
             page_from=page.page_from
