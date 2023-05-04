@@ -15,6 +15,10 @@ class Page:
         self.page_size = page_size
         self.page_number = page_number
 
+    @property
+    def page_from(self):
+        return self.page_size * (self.page_number - 1)
+
 
 class FilmSortEnum(str, Enum):
     imdb_rating_asc: str = 'imdb_rating:asc'

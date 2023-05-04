@@ -23,13 +23,15 @@ class GenreService:
         return genre
 
     async def get_genre_list(self, page: Page) -> Optional[list[Genre]]:
-        from_page = page.page_size * (page.page_number - 1)
-        genres = await self.genre_index.get_genres(page_from=from_page, page_size=page.page_size)
+        genres = await self.genre_index.get_genres(page_from=page.page_from, page_size=page.page_size)
         return genres
 
     async def search_genres(self, query: str, page: Page) -> Optional[list[Genre]]:
-        from_page = page.page_size * (page.page_number - 1)
-        genres = await self.genre_index.search_genres(raw_query=query, page_size=page.page_size, page_from=from_page)
+        genres = await self.genre_index.search_genres(
+            raw_query=query,
+            page_size=page.page_size,
+            page_from=page.page_from
+        )
         return genres
 
 

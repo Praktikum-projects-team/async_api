@@ -23,13 +23,15 @@ class PersonService:
         return person
 
     async def get_persons_list(self, page: Page) -> Optional[list[Person]]:
-        from_page = page.page_size * (page.page_number - 1)
-        persons = await self.person_index.get_persons(page_from=from_page, page_size=page.page_size)
+        persons = await self.person_index.get_persons(page_from=page.page_from, page_size=page.page_size)
         return persons
 
     async def search_persons(self, query: str, page: Page) -> Optional[list[Person]]:
-        from_page = page.page_size * (page.page_number - 1)
-        persons = await self.person_index.search_persons(raw_query=query, page_size=page.page_size, page_from=from_page)
+        persons = await self.person_index.search_persons(
+            raw_query=query,
+            page_size=page.page_size,
+            page_from=page.page_from
+        )
         return persons
 
 

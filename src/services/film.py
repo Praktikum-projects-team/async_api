@@ -26,12 +26,11 @@ class FilmService:
             page: Page,
             filtering: str
     ) -> Optional[list[FilmBase]]:
-        page_from = page.page_size * (page.page_number - 1)
         films = await self.film_index.get_films_by_filter(
             raw_filter=filtering,
             sort=sort,
             page_size=page.page_size,
-            page_from=page_from,
+            page_from=page.page_from,
         )
         return films
 
@@ -41,12 +40,11 @@ class FilmService:
             query: str,
             sort: str,
     ) -> Optional[list[FilmBase]]:
-        page_from = page.page_size * (page.page_number - 1)
         films = await self.film_index.search_films(
             raw_query=query,
             sort=sort,
             page_size=page.page_size,
-            page_from=page_from,
+            page_from=page.page_from,
         )
         return films
 
@@ -56,10 +54,12 @@ class FilmService:
             page: Page,
             filtration: str
     ) -> Optional[list[Film]]:
-        page_from = page.page_size * (page.page_number - 1)
-        films = await self.film_index.get_films_by_person(person_id=filtration, sort=sort,
-                                                          page_size=page.page_size,
-                                                          page_from=page_from, )
+        films = await self.film_index.get_films_by_person(
+            person_id=filtration,
+            sort=sort,
+            page_size=page.page_size,
+            page_from=page.page_from,
+        )
         return films
 
 
