@@ -6,6 +6,7 @@ from elasticsearch import NotFoundError
 from core.config import CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from core.base_model import OrjsonBaseModel
+from models.base_model import BaseServiceModelChild
 
 
 class AbstractFulltextIndex(abc.ABC):
@@ -22,7 +23,7 @@ class AbstractFulltextIndex(abc.ABC):
     async def _raw_get_by_id(self, id_) -> dict:
         return await self.searcher.get_by_id(index_name=self.index_name, id=id_)
 
-    async def get_by_id(self, id_) -> Optional[OrjsonBaseModel]:
+    async def get_by_id(self, id_) -> Optional[BaseServiceModelChild]:
         try:
             obj = await self._raw_get_by_id(id_)
         except NotFoundError:
@@ -38,7 +39,7 @@ class AbstractFulltextIndex(abc.ABC):
             sort: Optional[str] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
-    ) -> list[OrjsonBaseModel]:
+    ) -> list[BaseServiceModelChild]:
         objects = await self.searcher.search_many(
             index_name=self.index_name,
             query=query,
@@ -54,7 +55,7 @@ class AbstractFulltextIndex(abc.ABC):
             sort: Optional[str] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
-    ) -> list[OrjsonBaseModel]:
+    ) -> list[BaseServiceModelChild]:
         return await self._search_by_query(
             query=self._get_search_query(raw_query),
             sort=sort,
@@ -67,7 +68,7 @@ class AbstractFulltextIndex(abc.ABC):
             sort: Optional[str] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
-    ) -> list[OrjsonBaseModel]:
+    ) -> list[BaseServiceModelChild]:
         return await self._search_by_query(
             query=None,
             sort=sort,
