@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Any
 
 from elasticsearch import NotFoundError
 
@@ -27,3 +27,19 @@ class BaseFulltextIndex:
         except NotFoundError:
             return None
         return self.model(**obj)
+
+    async def _search_by_query(
+            self,
+            query: Any,
+            sort: Optional[str] = None,
+            page_size: Optional[int] = None,
+            page_from: Optional[int] = None,
+    ) -> list[OrjsonBaseModel]:
+        objects = await self.searcher.search_many(
+            index_name=self.index_name,
+            query=query,
+            sort=sort,
+            page_size=page_size,
+            page_from=page_from,
+        )
+        return [self.model(**obj) for obj in objects]

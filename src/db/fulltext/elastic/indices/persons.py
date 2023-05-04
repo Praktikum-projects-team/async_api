@@ -23,7 +23,7 @@ class ESPersonIndex(AbstractPersonIndex):
             page_from: Optional[int] = None,
     ) -> list[Person]:
         query = self._get_search_query(raw_query)
-        persons = await self._search_persons_by_query(
+        persons = await self._search_by_query(
             query=query,
             page_size=page_size,
             page_from=page_from,

@@ -32,7 +32,7 @@ class ESFilmIndex(AbstractFilmIndex):
         query_writers = {"nested": {"path": "writers", "query": {"match": {"writers.id": person_id}}}}
         query_director = {"match": {"director.id": person_id}}
         query = {"should": [query_actors, query_writers, query_director]}
-        return await self._search_films_by_query(
+        return await self._search_by_query(
             query=query,
             sort=sort,
             page_size=page_size,

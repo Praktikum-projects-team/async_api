@@ -12,22 +12,6 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
     def model(self) -> type(Film):
         return Film
 
-    async def _search_films_by_query(
-            self,
-            query: Any,
-            sort: Optional[str],
-            page_size: Optional[int],
-            page_from: Optional[int],
-    ) -> list[Film]:
-        films = await self.searcher.search_many(
-            index_name=self.index_name,
-            query=query,
-            sort=sort,
-            page_size=page_size,
-            page_from=page_from,
-        )
-        return [self.model(**film) for film in films]
-
     def _get_search_query(self, raw_query: str) -> list[dict]:
         raise NotImplementedError
 
@@ -38,7 +22,7 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
             page_size: Optional[int],
             page_from: Optional[int],
     ) -> list[Film]:
-        return await self._search_films_by_query(
+        return await self._search_by_query(
             query=self._get_search_query(raw_query),
             sort=sort,
             page_size=page_size,
@@ -55,7 +39,7 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
             page_size: Optional[int],
             page_from: Optional[int],
     ) -> [list[Film]]:  # only works with genres for now
-        return await self._search_films_by_query(
+        return await self._search_by_query(
             query=self._get_filter_query(raw_filter),
             sort=sort,
             page_size=page_size,

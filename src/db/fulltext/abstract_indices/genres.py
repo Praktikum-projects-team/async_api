@@ -15,27 +15,13 @@ class AbstractGenreIndex(abc.ABC, BaseFulltextIndex):
     def _get_search_query(self, raw_query: str) -> list[dict]:
         raise NotImplementedError
 
-    async def _search_genres_by_query(
-            self,
-            query: Any,
-            page_size: Optional[int],
-            page_from: Optional[int],
-    ) -> list[Genre]:
-        genres = await self.searcher.search_many(
-            index_name=self.index_name,
-            query=query,
-            page_size=page_size,
-            page_from=page_from,
-        )
-        return [self.model(**genre) for genre in genres]
-
     async def search_genres(
             self,
             raw_query: str,
             page_size: Optional[int],
             page_from: Optional[int],
     ) -> list[Genre]:
-        return await self._search_genres_by_query(
+        return await self._search_by_query(
             query=self._get_search_query(raw_query),
             page_size=page_size,
             page_from=page_from,
