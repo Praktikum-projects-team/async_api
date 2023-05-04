@@ -12,16 +12,6 @@ class AbstractGenreIndex(abc.ABC, BaseFulltextIndex):
     def model(self) -> type(Genre):
         return Genre
 
-    async def _raw_get_genre_by_id(self, genre_id) -> dict:
-        return await self.searcher.get_by_id(index_name=self.index_name, id=genre_id)
-
-    async def get_genre_by_id(self, genre_id) -> Optional[Genre]:
-        try:
-            genre = await self._raw_get_genre_by_id(genre_id=genre_id)
-        except NotFoundError:
-            return None
-        return self.model(**genre)
-
     def _get_search_query(self, raw_query: str) -> list[dict]:
         raise NotImplementedError
 

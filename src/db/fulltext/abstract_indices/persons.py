@@ -12,16 +12,6 @@ class AbstractPersonIndex(abc.ABC, BaseFulltextIndex):
     def model(self) -> type(Person):
         return Person
 
-    async def _raw_get_person_by_id(self, person_id) -> dict:
-        return await self.searcher.get_by_id(index_name=self.index_name, id=person_id)
-
-    async def get_person_by_id(self, person_id) -> Optional[Person]:
-        try:
-            person = await self._raw_get_person_by_id(person_id=person_id)
-        except NotFoundError:
-            return None
-        return self.model(**person)
-
     def _get_search_query(self, raw_query: str) -> list[dict]:
         raise NotImplementedError
 

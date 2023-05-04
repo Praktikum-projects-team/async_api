@@ -19,7 +19,7 @@ class GenreService:
         self.genre_index = genre_index
 
     async def get_by_id(self, genre_id: str) -> Optional[Genre]:
-        genre = await self.genre_index.get_genre_by_id(genre_id)
+        genre = await self.genre_index.get_by_id(genre_id)
         return genre
 
     async def get_genre_list(self, page: Page) -> Optional[list[Genre]]:

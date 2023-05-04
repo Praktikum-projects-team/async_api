@@ -18,7 +18,7 @@ class FilmService:
         self.film_index = film_index
 
     async def get_by_id(self, film_id: str) -> Optional[Film]:
-        return await self.film_index.get_film_by_id(film_id)
+        return await self.film_index.get_by_id(film_id)
 
     async def get_all_films(
             self,

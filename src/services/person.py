@@ -19,7 +19,7 @@ class PersonService:
         self.person_index = person_index
 
     async def get_by_id(self, person_id: str) -> Optional[Person]:
-        person = await self.person_index.get_person_by_id(person_id)
+        person = await self.person_index.get_by_id(person_id)
         return person
 
     async def get_persons_list(self, page: Page) -> Optional[list[Person]]:

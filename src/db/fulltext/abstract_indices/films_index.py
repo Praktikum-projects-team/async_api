@@ -12,9 +12,6 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
     def model(self) -> type(Film):
         return Film
 
-    async def _raw_get_film_by_id(self, film_id) -> dict:
-        return await self.searcher.get_by_id(index_name=self.index_name, id=film_id)
-
     async def _search_films_by_query(
             self,
             query: Any,
@@ -30,13 +27,6 @@ class AbstractFilmIndex(abc.ABC, BaseFulltextIndex):
             page_from=page_from,
         )
         return [self.model(**film) for film in films]
-
-    async def get_film_by_id(self, film_id) -> Optional[Film]:
-        try:
-            film = await self._raw_get_film_by_id(film_id=film_id)
-        except NotFoundError:
-            return None
-        return self.model(**film)
 
     def _get_search_query(self, raw_query: str) -> list[dict]:
         raise NotImplementedError
