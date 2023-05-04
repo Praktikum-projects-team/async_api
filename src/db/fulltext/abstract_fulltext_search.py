@@ -28,19 +28,19 @@ class AbstractFulltextSearch(abc.ABC):
             self,
             index_name: str,
             query: Any,
-            sort: Optional[str],
-            page_size: Optional[int],
-            page_from: Optional[int],
-    ) -> list[dict]:
+            sort: Optional[str] = None,
+            page_size: Optional[int] = None,
+            page_from: Optional[int] = None,
+    ) -> list[dict]:  # TODO: divide on search(...) and get_by_field(...)
         raise NotImplementedError
 
     async def search_many(
             self,
             index_name: str,
             query: Any,
-            sort: Optional[str],
-            page_size: Optional[int],
-            page_from: Optional[int],
+            sort: Optional[str] = None,
+            page_size: Optional[int] = None,
+            page_from: Optional[int] = None,
     ) -> list[dict]:
         cache_key = self.cache.get_key(
             index_name=index_name, query=query, sort=sort, page_size=page_size, page_from=page_from

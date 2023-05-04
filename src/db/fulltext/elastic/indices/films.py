@@ -1,9 +1,12 @@
+from typing import Optional
+
 from fastapi import Depends
 
 from core.config import ElasticConfig, CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from db.fulltext.abstract_indices.films_index import AbstractFilmIndex
 from db.fulltext.elastic.elastic_fulltext_search import get_elastic_fulltext_search
+from models.film import Film
 
 
 class ESFilmIndex(AbstractFilmIndex):
@@ -17,6 +20,24 @@ class ESFilmIndex(AbstractFilmIndex):
         if not raw_filter:
             return None
         return [{"nested": {"path": "genre", "query": {"match": {"genre.id": raw_filter}}}}]
+
+    async def get_films_by_person(
+            self,
+            person_id: str,
+            sort: Optional[str],
+            page_size: Optional[int],
+            page_from: Optional[int],
+    ) -> [list[Film]]:
+        query_actors = {"nested": {"path": "actors", "query": {"match": {"actors.id": person_id}}}}
+        query_writers = {"nested": {"path": "writers", "query": {"match": {"writers.id": person_id}}}}
+        query_director = {"match": {"director.id": person_id}}
+        query = {"should": [query_actors, query_writers, query_director]}
+        return await self._search_films_by_query(
+            query=query,
+            sort=sort,
+            page_size=page_size,
+            page_from=page_from,
+        )
 
 
 def get_elastic_film_index(
