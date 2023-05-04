@@ -1,6 +1,8 @@
-from models.base import BaseApiModel
+from uuid import UUID
+
+from core.base_model import OrjsonBaseModel
 
 
-class Genre(BaseApiModel):
-    id: str
+class Genre(OrjsonBaseModel):
+    id: UUID
     name: str
