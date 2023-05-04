@@ -18,7 +18,6 @@ class AbstractFulltextSearch(abc.ABC):
     async def get_by_id(self, index_name: str, id: Any) -> dict:
         cache_key = self.cache.get_key(index_name=index_name, id=id)
         doc = await self.cache.get_cache(cache_key)
-        if doc:
         if not doc:
             doc = await self.get_by_id_without_cache(index_name=index_name, id=id)
             await self.cache.set_cache(key=cache_key, value=doc, ttl=self.cache_ttl_in_seconds)
@@ -47,7 +46,6 @@ class AbstractFulltextSearch(abc.ABC):
             index_name=index_name, query=query, sort=sort, page_size=page_size, page_from=page_from
         )
         doc = await self.cache.get_cache(cache_key)
-        if doc:
         if not doc:
             doc = await self.search_many_without_cache(
                 index_name=index_name, query=query, sort=sort, page_size=page_size, page_from=page_from
