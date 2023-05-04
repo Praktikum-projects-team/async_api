@@ -1,4 +1,5 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
 
@@ -7,13 +8,13 @@ from models.genre import Genre
 
 
 class FilmBase(OrjsonBaseModel):
-    id: str
+    id: UUID
     title: str
     imdb_rating: Optional[float]
 
 
 class FilmPerson(OrjsonBaseModel):
-    id: str
+    id: UUID
     name: str
 
 

@@ -1,6 +1,8 @@
+from uuid import UUID
+
 from core.base_model import OrjsonBaseModel
 
 
 class Genre(OrjsonBaseModel):
-    id: str
+    id: UUID
     name: str
