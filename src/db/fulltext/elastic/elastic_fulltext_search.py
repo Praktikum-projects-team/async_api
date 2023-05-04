@@ -23,7 +23,10 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
     ) -> list[dict]:
+
         body = {"query": {"bool": {"must": query}}} if query else None
+        if query and "should" in query:
+            body = {"query": {"bool": query}}
 
         docs = await self.elastic.search(
             index=index_name,

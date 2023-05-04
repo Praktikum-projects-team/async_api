@@ -30,9 +30,8 @@ class ESFilmIndex(AbstractFilmIndex):
     ) -> [list[Film]]:
         query_actors = {"nested": {"path": "actors", "query": {"match": {"actors.id": person_id}}}}
         query_writers = {"nested": {"path": "writers", "query": {"match": {"writers.id": person_id}}}}
-        # query_director = {"nested": {"path": "director", "query": {"match": {"director.id": filtering}}}}
         query_director = {"match": {"director.id": person_id}}
-        query = [query_actors, query_writers, query_director]
+        query = {"should": [query_actors, query_writers, query_director]}
         return await self._search_films_by_query(
             query=query,
             sort=sort,

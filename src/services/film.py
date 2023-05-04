@@ -60,9 +60,12 @@ class FilmService:
             self,
             sort: str,
             page: Page,
-            filtering: str
+            filtration: str
     ) -> Optional[list[Film]]:
-        films = await self.film_index.get_films_by_person(page, sort, body=body)
+        page_from = page.page_size * (page.page_number - 1)
+        films = await self.film_index.get_films_by_person(person_id=filtration, sort=sort,
+                                                          page_size=page.page_size,
+                                                          page_from=page_from, )
         return films
 
 

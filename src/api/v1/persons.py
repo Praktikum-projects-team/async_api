@@ -11,7 +11,7 @@ from api.v1.models_api import (
 router = APIRouter()
 
 
-@router.get('/', response_model=list[PersonApi])
+@router.get('', response_model=list[PersonApi])
 async def person_list(person_service: PersonService = Depends(get_person_service),
                       page: Page = Depends()) -> list[PersonApi]:
     persons = await person_service.get_persons_list(page)
@@ -50,7 +50,7 @@ async def person_film(person_id: str, filtration: FilmFilter = Depends(), sort: 
                       film_service: FilmService = Depends(get_film_service),
                       page: Page = Depends()) -> list[FilmBaseApi]:
     filtration.person = person_id
-    person_films = await film_service.get_films_by_person(sort.sort, page, filtration.person)
+    person_films = await film_service.get_films_by_person(sort.sort, page, person_id)
     if not person_films:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='person films not found')
     person_films_for_api = [film_to_api(film) for film in person_films]

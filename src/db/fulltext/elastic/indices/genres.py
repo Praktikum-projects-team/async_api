@@ -4,35 +4,35 @@ from fastapi import Depends
 
 from core.config import ElasticConfig, CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
-from db.fulltext.abstract_indices.persons import AbstractPersonIndex
+from db.fulltext.abstract_indices.genres import AbstractGenreIndex
 from db.fulltext.elastic.elastic_fulltext_search import get_elastic_fulltext_search
-from models.person import Person
+from models.genre import Genre
 
 
-class ESPersonIndex(AbstractPersonIndex):
+class ESGenreIndex(AbstractGenreIndex):
 
     def _get_search_query(self, raw_query: str) -> list[dict]:
         if not raw_query:
             return None
-        return [{"multi_match": {"query": raw_query, "fields": ["full_name"]}}]
+        return [{"multi_match": {"query": raw_query, "fields": ["name"]}}]
 
-    async def get_persons(
+    async def get_genres(
             self,
             raw_query: Optional[str] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
-    ) -> list[Person]:
+    ) -> list[Genre]:
         query = self._get_search_query(raw_query)
-        persons = await self._search_persons_by_query(
+        genres = await self._search_genres_by_query(
             query=query,
             page_size=page_size,
             page_from=page_from,
         )
-        return persons
+        return genres
 
 
-def get_elastic_person_index(
+def get_elastic_genre_index(
         es_searcher: AbstractFulltextSearch = Depends(get_elastic_fulltext_search)
-) -> ESPersonIndex:
-    return ESPersonIndex(searcher=es_searcher, index_name=ElasticConfig().index_person,
-                         cache_ttl=CacheTTLConfig().persons_ttl)
+) -> ESGenreIndex:
+    return ESGenreIndex(searcher=es_searcher, index_name=ElasticConfig().index_genre,
+                        cache_ttl=CacheTTLConfig().genres_ttl)
