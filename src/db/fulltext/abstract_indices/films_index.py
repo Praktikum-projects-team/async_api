@@ -1,7 +1,5 @@
 import abc
-from typing import Any, Optional
-
-from elasticsearch import NotFoundError
+from typing import Optional
 
 from db.fulltext.abstract_indices.base_index import AbstractFulltextIndex
 from models.film import Film

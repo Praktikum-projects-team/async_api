@@ -1,8 +1,7 @@
 import abc
-from typing import Any, Optional
+from typing import Optional
 
 from api.v1.utils import Page
-from core.base_model import OrjsonBaseModel
 from db.fulltext.abstract_indices.base_index import AbstractFulltextIndex
 from models.base_model import BaseServiceModelChild
 

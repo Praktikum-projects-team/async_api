@@ -39,7 +39,7 @@ async def search_persons(
 
 @router.get('/{person_id}', response_model=PersonApi)
 async def person_details(person_id: str, person_service: PersonService = Depends(get_person_service)) -> PersonApi:
-    person = await person_service.get_y_id(person_id)
+    person = await person_service.get_by_id(person_id)
     if not person:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='person not found')
     return person_to_api_detail(person)
