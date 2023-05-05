@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get('', response_model=list[PersonApi])
 async def person_list(person_service: PersonService = Depends(get_person_service),
                       page: Page = Depends()) -> list[PersonApi]:
-    persons = await person_service.get_persons_list(page)
+    persons = await person_service.get_all(page=page)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='persons not found')
     persons_list = [person_to_api_detail(person) for person in persons]
@@ -30,7 +30,7 @@ async def search_persons(
         ),
         person_service: PersonService = Depends(get_person_service),
         page: Page = Depends()) -> list[PersonApi]:
-    persons = await person_service.search_persons(query, page)
+    persons = await person_service.search(query, page)
     if not persons:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='persons not found')
     persons_list = [person_to_api_detail(person) for person in persons]

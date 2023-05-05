@@ -46,7 +46,7 @@ async def search_film(
     sort: FilmSort = Depends(),
     film_service: FilmService = Depends(get_film_service)
 ) -> Optional[list[FilmBaseApi]]:
-    films = await film_service.search_film(page, query, sort.sort)
+    films = await film_service.search(query, page, sort.sort)
     films_for_api = [film_to_api(film) for film in films]
     return films_for_api
 
