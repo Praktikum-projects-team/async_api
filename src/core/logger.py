@@ -45,16 +45,16 @@ LOGGING = {
             'level': app_config.logging_level,
         },
         'uvicorn.error': {
-            'level': 'INFO',
+            'level': app_config.logging_level,
         },
         'uvicorn.access': {
             'handlers': ['access'],
-            'level': 'INFO',
+            'level': app_config.logging_level,
             'propagate': False,
         },
     },
     'root': {
-        'level': 'INFO',
+        'level': app_config.logging_level,
         'formatter': 'verbose',
         'handlers': LOG_DEFAULT_HANDLERS,
     },
