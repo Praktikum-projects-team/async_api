@@ -1,0 +1,305 @@
+{
+	"info": {
+		"_postman_id": "de4170eb-10d7-4412-b5e8-ad12a08ccd75",
+		"name": "Movies Fast Api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5319546"
+	},
+	"item": [
+		{
+			"name": "films - oдин фильм",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/films/00af52ec-9345-4d66-adbe-50eb917f463a",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"films",
+						"00af52ec-9345-4d66-adbe-50eb917f463a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "films - cписок фильмов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/films?sort=-imdb_rating&page_size=3&page_number=1&genre=3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"films"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "-imdb_rating"
+						},
+						{
+							"key": "page_size",
+							"value": "3"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						},
+						{
+							"key": "genre",
+							"value": "3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff"
+						},
+						{
+							"key": "genre",
+							"value": "Western",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "films - поиск фильмов",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/films/search?page_size=5&page_number=2&sort=-imdb_rating&query=one",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"films",
+						"search"
+					],
+					"query": [
+						{
+							"key": "page_size",
+							"value": "5"
+						},
+						{
+							"key": "page_number",
+							"value": "2"
+						},
+						{
+							"key": "sort",
+							"value": "-imdb_rating"
+						},
+						{
+							"key": "query",
+							"value": "one"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "genres - oдин жанр",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/genres/3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"genres",
+						"3d8d9bf5-0d90-4353-88ba-4ccc5d2c07ff"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "genres - cписок жанров",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/genres?sort=-imdb_rating&page_size=10&page_number=1",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"genres"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "-imdb_rating"
+						},
+						{
+							"key": "page_size",
+							"value": "10"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "genres - поиск жанров",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/genres/search?query=Action&page_number=1&page_size=10",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"genres",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "Action"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						},
+						{
+							"key": "page_size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "persons - одна персона",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/persons/70adcb88-ed89-4654-866e-9b124b95c82b",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"persons",
+						"70adcb88-ed89-4654-866e-9b124b95c82b"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "persons - cписок персон",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/persons?sort=-imdb_rating&page_size=10&page_number=1",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"persons"
+					],
+					"query": [
+						{
+							"key": "sort",
+							"value": "-imdb_rating"
+						},
+						{
+							"key": "page_size",
+							"value": "10"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "persons - поиск персон",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/persons/search?query=Mark Hamill&page_number=1&page_size=10",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"persons",
+						"search"
+					],
+					"query": [
+						{
+							"key": "query",
+							"value": "Mark Hamill"
+						},
+						{
+							"key": "page_number",
+							"value": "1"
+						},
+						{
+							"key": "page_size",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "persons - поиск  фильмов по персоне",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{movies_url}}/api/v1/persons/26e83050-29ef-4163-a99d-b546cac208f8/film",
+					"host": [
+						"{{movies_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"persons",
+						"26e83050-29ef-4163-a99d-b546cac208f8",
+						"film"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
