@@ -1,3 +1,7 @@
+from core.config import AppConfig
+
+app_config = AppConfig()
+
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOG_DEFAULT_HANDLERS = ['console', ]
 
@@ -38,19 +42,19 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': LOG_DEFAULT_HANDLERS,
-            'level': 'INFO',
+            'level': app_config.logging_level,
         },
         'uvicorn.error': {
-            'level': 'INFO',
+            'level': app_config.logging_level,
         },
         'uvicorn.access': {
             'handlers': ['access'],
-            'level': 'INFO',
+            'level': app_config.logging_level,
             'propagate': False,
         },
     },
     'root': {
-        'level': 'INFO',
+        'level': app_config.logging_level,
         'formatter': 'verbose',
         'handlers': LOG_DEFAULT_HANDLERS,
     },
