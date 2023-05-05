@@ -11,5 +11,5 @@ fastapi==0.63.0
 orjson==3.8.10
 uvicorn==0.12.2
 httptools==0.5.0
-gunicorn
+gunicorn==20.1.0
 uvloop==0.17.0 ; sys_platform != "win32" and implementation_name == "cpython"
