@@ -2,7 +2,7 @@ from typing import Optional
 
 from core.config import CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 
 
 class BaseFulltextIndex:
@@ -13,5 +13,5 @@ class BaseFulltextIndex:
         self.searcher.cache_ttl_in_seconds = cache_ttl or CacheTTLConfig().default_ttl
 
     @property
-    def model(self) -> type(BaseApiModel):
+    def model(self) -> type(OrjsonBaseModel):
         raise NotImplementedError

@@ -1,16 +1,16 @@
-from typing import Optional
+from uuid import UUID
 
-from pydantic import Field, UUID4
+from pydantic import Field
 
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 
 
-class PersonFilms(BaseApiModel):
+class PersonFilms(OrjsonBaseModel):
     role: list[str]
-    id: str
+    id: UUID
 
 
-class Person(BaseApiModel):
-    id: str
+class Person(OrjsonBaseModel):
+    id: UUID
     full_name: str
     films: list[PersonFilms] = Field(default_factory=list)

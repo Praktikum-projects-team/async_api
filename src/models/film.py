@@ -1,19 +1,20 @@
 from typing import Optional
+from uuid import UUID
 
 from pydantic import Field
 
-from models.base import BaseApiModel
+from core.base_model import OrjsonBaseModel
 from models.genre import Genre
 
 
-class FilmBase(BaseApiModel):
-    id: str
+class FilmBase(OrjsonBaseModel):
+    id: UUID
     title: str
     imdb_rating: Optional[float]
 
 
-class FilmPerson(BaseApiModel):
-    id: str
+class FilmPerson(OrjsonBaseModel):
+    id: UUID
     name: str
 
 
