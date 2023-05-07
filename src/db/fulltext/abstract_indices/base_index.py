@@ -1,3 +1,4 @@
+import abc
 from typing import Optional, Any
 
 from elasticsearch import NotFoundError
@@ -8,13 +9,14 @@ from core.base_model import OrjsonBaseModel
 from models.base_model import BaseServiceModelChild
 
 
-class AbstractFulltextIndex:
+class AbstractFulltextIndex(abc.ABC):
 
     def __init__(self, searcher: AbstractFulltextSearch, index_name: str, cache_ttl: Optional[int] = None):
         self.searcher = searcher
         self.index_name = index_name
         self.searcher.cache_ttl_in_seconds = cache_ttl or CacheTTLConfig().default_ttl
 
+    @abc.abstractmethod
     @property
     def model(self) -> type(OrjsonBaseModel):
         raise NotImplementedError
@@ -29,6 +31,7 @@ class AbstractFulltextIndex:
             return None
         return self.model(**obj)
 
+    @abc.abstractmethod
     def _get_search_query(self, raw_query: str) -> list[dict]:
         raise NotImplementedError
 

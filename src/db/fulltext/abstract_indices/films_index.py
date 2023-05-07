@@ -1,15 +1,16 @@
-import abc
+from abc import abstractmethod
 from typing import Optional
 
 from db.fulltext.abstract_indices.base_index import AbstractFulltextIndex
 from models.film import Film
 
 
-class AbstractFilmIndex(abc.ABC, AbstractFulltextIndex):
+class AbstractFilmIndex(AbstractFulltextIndex):
     @property
     def model(self) -> type(Film):
         return Film
 
+    @abstractmethod
     def _get_filter_query(self, raw_filter: str) -> list[dict]:
         raise NotImplementedError
 
@@ -27,6 +28,7 @@ class AbstractFilmIndex(abc.ABC, AbstractFulltextIndex):
             page_from=page_from,
         )
 
+    @abstractmethod
     async def get_films_by_person(
             self,
             person_id: str,
