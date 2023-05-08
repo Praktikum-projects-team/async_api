@@ -28,6 +28,7 @@ services:
   fastapi:
     container_name: fastapi
     build: ..
+    image: fastapi-image
     env_file:
       - .env_test
     depends_on:
@@ -36,7 +37,7 @@ services:
 
   tests:
     container_name: tests
-    build: .
+    image: fastapi-image
     env_file:
       - .env_test
     depends_on:
@@ -44,7 +45,7 @@ services:
       - elastic
       - fastapi
     entrypoint: >
-      sh -c "pip install -r /tests/functional/requirements.txt
-      && python3 /tests/functional/utils/wait_for_es.py
-      && python3 /tests/functional/utils/wait_for_redis.py
-      && pytest /tests/functional/src"
+      sh -c "pip install -r tests/functional/requirements.txt
+      && python3 tests/functional/utils/wait_for_es.py
+      && python3 tests/functional/utils/wait_for_redis.py
+      && pytest tests/functional/src"

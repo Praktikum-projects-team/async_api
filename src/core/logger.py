@@ -1,6 +1,11 @@
-from core.config import AppConfig
+import os
 
-app_config = AppConfig()
+from dotenv import load_dotenv
+
+load_dotenv()
+
+logging_level = os.environ.get('LOGGING_LEVEL')
+
 
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOG_DEFAULT_HANDLERS = ['console', ]
@@ -42,19 +47,19 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': LOG_DEFAULT_HANDLERS,
-            'level': app_config.logging_level,
+            'level': logging_level,
         },
         'uvicorn.error': {
-            'level': app_config.logging_level,
+            'level': logging_level,
         },
         'uvicorn.access': {
             'handlers': ['access'],
-            'level': app_config.logging_level,
+            'level': logging_level,
             'propagate': False,
         },
     },
     'root': {
-        'level': app_config.logging_level,
+        'level': logging_level,
         'formatter': 'verbose',
         'handlers': LOG_DEFAULT_HANDLERS,
     },

@@ -15,7 +15,6 @@ class AppConfig(BaseSettings):
     port: int = Field(..., env='APP_PORT')
     default_page_size: int = Field(..., env='DEFAULT_PAGE_SIZE')
     is_debug: bool = Field(..., env='IS_DEBUG')
-    logging_level: str = Field(..., env='LOGGING_LEVEL')
 
 
 class ElasticConfig(BaseSettings):
