@@ -1,9 +1,9 @@
+from enum import Enum
 from typing import Optional
 
 from fastapi import Query
 
 from core.config import AppConfig
-from db.fulltext.elastic.elastic_query_formatting import FilmSortEnum, QueryFormatting
 
 
 class Page:
@@ -20,16 +20,27 @@ class Page:
         return self.page_size * (self.page_number - 1)
 
 
+class SortType(str, Enum):
+    ASC = 'asc'
+    DESC = 'desc'
+
+
 class FilmSort:
+    SORTABLE_FIELDS = ('imdb_rating',)
+
     def __init__(
             self,
-            sort: FilmSortEnum = Query(
-                FilmSortEnum.imdb_rating_desc_alias,
+            sort: str = Query(
+                '-imdb_rating',
                 title='Sort field',
                 description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
             )
     ) -> None:
-        self.sort = QueryFormatting.query_formatting_film_sort(sort)
+        sort_type = SortType.DESC if sort.startswith('-') else SortType.ASC
+        field_name = sort.removeprefix('-')
+        if field_name not in self.SORTABLE_FIELDS:
+            raise ValueError(f'can not sort by {field_name}')
+        self.sort = {field_name: sort_type}
 
 
 class FilmFilter:

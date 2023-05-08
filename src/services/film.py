@@ -21,7 +21,7 @@ class FilmService(BaseService):
 
     async def get_all_films(
             self,
-            sort: str,
+            sort: dict,
             page: Page,
             filtering: str
     ) -> Optional[list[FilmBase]]:
@@ -35,7 +35,7 @@ class FilmService(BaseService):
 
     async def get_films_by_person(
             self,
-            sort: str,
+            sort: dict,
             page: Page,
             filtration: str
     ) -> Optional[list[Film]]:
