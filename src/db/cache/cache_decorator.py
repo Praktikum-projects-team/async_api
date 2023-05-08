@@ -1,31 +1,9 @@
-import dataclasses
 import functools
 
-from db.cache.abstract_cache import AbstractCache
-from db.cache.redis_cache import RedisCache, get_redis_cache
+from db.cache.redis_cache import RedisCache
 from db.redis import redis
-from dataclasses import dataclass
-from fastapi import Depends
 
 redis_cache = RedisCache(redis)
-
-
-@dataclass
-class CacheOptions:
-    ttl_in_seconds: int
-
-
-class GetCache:
-    def __init__(
-            self,
-            cache_options: CacheOptions,
-    ):
-        self.cache_options = cache_options
-        # self.cache_provider = None
-
-    def __call__(self, cache_provider: AbstractCache = Depends(get_redis_cache)):
-        cache_provider.ttl_in_seconds = self.cache_options.ttl_in_seconds
-        return cache_provider
 
 
 def with_cache():

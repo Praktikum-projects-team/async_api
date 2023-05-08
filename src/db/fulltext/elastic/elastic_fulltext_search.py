@@ -3,8 +3,9 @@ from typing import Any, Union, Optional
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
-from db.cache.cache_decorator import with_cache, GetCache, CacheOptions
+from db.cache.cache_decorator import with_cache
 from db.cache.abstract_cache import AbstractCache
+from db.cache.redis_cache import get_redis_cache
 from db.elastic import get_elastic
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 
@@ -43,8 +44,17 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
         return [doc['_source'] for doc in docs['hits']['hits']]
 
 
-def get_elastic_fulltext_search(
-        elastic: AsyncElasticsearch = Depends(get_elastic),
-        cache: AbstractCache = Depends(GetCache(cache_options=CacheOptions(ttl_in_seconds=10)))
-) -> ElasticFulltextSearch:
-    return ElasticFulltextSearch(elastic, cache)
+class GetElasticFulltextSearch:
+    def __init__(
+            self,
+            ttl_in_seconds: int,
+    ):
+        self.ttl_in_seconds = ttl_in_seconds
+
+    def __call__(
+            self,
+            elastic: AsyncElasticsearch = Depends(get_elastic),
+            cache: AbstractCache = Depends(get_redis_cache)
+    ) -> ElasticFulltextSearch:
+        cache.ttl_in_seconds = self.ttl_in_seconds
+        return ElasticFulltextSearch(elastic, cache)

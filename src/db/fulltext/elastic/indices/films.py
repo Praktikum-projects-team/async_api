@@ -5,7 +5,7 @@ from fastapi import Depends
 from core.config import ElasticConfig, CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from db.fulltext.abstract_indices.films_index import AbstractFilmIndex
-from db.fulltext.elastic.elastic_fulltext_search import get_elastic_fulltext_search
+from db.fulltext.elastic.elastic_fulltext_search import GetElasticFulltextSearch
 from models.film import Film
 
 
@@ -41,6 +41,6 @@ class ESFilmIndex(AbstractFilmIndex):
 
 
 def get_elastic_film_index(
-        es_searcher: AbstractFulltextSearch = Depends(get_elastic_fulltext_search)
+        es_searcher: AbstractFulltextSearch = Depends(GetElasticFulltextSearch(CacheTTLConfig().movies_ttl))
 ) -> ESFilmIndex:
-    return ESFilmIndex(searcher=es_searcher, index_name=ElasticConfig().index_movies, cache_ttl=CacheTTLConfig().movies_ttl)
+    return ESFilmIndex(searcher=es_searcher, index_name=ElasticConfig().index_movies)
