@@ -1,0 +1,50 @@
+version: '3'
+services:
+  elastic:
+    container_name: elastic
+    image: ghcr.io/yp-middle-python-24/elasticsearch:8.7.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f 'http://elastic:9200/_cat/health'" ]
+      interval: 10s
+      timeout: 30s
+      retries: 2
+    volumes:
+      - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
+
+  redis:
+    container_name: redis
+    image: redis:7
+    env_file:
+      - .env_test
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - $HOME/redis/data:/var/lib/redis/data
+
+  fastapi:
+    container_name: fastapi
+    build: ..
+    env_file:
+      - .env_test
+    depends_on:
+      - redis
+      - elastic
+
+  tests:
+    container_name: tests
+    build: .
+    env_file:
+      - .env_test
+    depends_on:
+      - redis
+      - elastic
+      - fastapi
+    entrypoint: >
+      sh -c "pip install -r /tests/functional/requirements.txt
+      && python3 /tests/functional/utils/wait_for_es.py
+      && python3 /tests/functional/utils/wait_for_redis.py
+      && pytest /tests/functional/src"
