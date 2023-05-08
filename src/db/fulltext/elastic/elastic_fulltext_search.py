@@ -3,24 +3,23 @@ from typing import Any, Union, Optional
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
-from db.cache.abstract_cache import AbstractCache, with_cache
-from db.cache.redis_cache import get_redis_cache
+from db.cache.cache_decorator import with_cache, GetCache, CacheOptions
+from db.cache.abstract_cache import AbstractCache
 from db.elastic import get_elastic
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 
 
 class ElasticFulltextSearch(AbstractFulltextSearch):
-    cache: AbstractCache = Depends(get_redis_cache)
-
-    def __init__(self, elastic: AsyncElasticsearch):
+    def __init__(self, elastic: AsyncElasticsearch, cache: AbstractCache):
         self.elastic = elastic
+        self.cache = cache
 
-    @with_cache(cache)
+    @with_cache()
     async def get_by_id(self, index_name: str, id: Any) -> dict:
         doc = await self.elastic.get(index=index_name, id=id)
         return doc['_source']
 
-    @with_cache(cache)
+    @with_cache()
     async def search_many(
             self,
             index_name: str,
@@ -46,5 +45,6 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
 
 def get_elastic_fulltext_search(
         elastic: AsyncElasticsearch = Depends(get_elastic),
+        cache: AbstractCache = Depends(GetCache(cache_options=CacheOptions(ttl_in_seconds=10)))
 ) -> ElasticFulltextSearch:
-    return ElasticFulltextSearch(elastic)
+    return ElasticFulltextSearch(elastic, cache)
