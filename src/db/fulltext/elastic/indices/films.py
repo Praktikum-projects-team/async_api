@@ -43,4 +43,6 @@ class ESFilmIndex(AbstractFilmIndex):
 def get_elastic_film_index(
         es_searcher: AbstractFulltextSearch = Depends(get_elastic_fulltext_search)
 ) -> ESFilmIndex:
-    return ESFilmIndex(searcher=es_searcher, index_name=ElasticConfig().index_movies, cache_ttl=CacheTTLConfig().movies_ttl)
+    return ESFilmIndex(
+        searcher=es_searcher, index_name=ElasticConfig().index_movies, cache_ttl=CacheTTLConfig().movies_ttl
+    )
