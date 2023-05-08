@@ -1,8 +1,5 @@
 import os
 
-from dotenv import load_dotenv
-
-load_dotenv()
 
 logging_level = os.environ.get('LOGGING_LEVEL')
 

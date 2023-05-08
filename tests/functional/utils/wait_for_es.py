@@ -5,6 +5,7 @@ from elasticsearch import Elasticsearch
 
 from tests.functional import settings
 
+
 elastic_config = settings.ElasticConfig()
 
 
