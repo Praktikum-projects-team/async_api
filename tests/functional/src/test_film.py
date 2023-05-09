@@ -41,57 +41,18 @@ from elasticsearch import AsyncElasticsearch
 from tests.functional.conftest import es_write_data
 from tests.functional.settings import test_settings
 from tests.functional.testdata.es_mapping import common_index_settings, index_mappings
+from tests.functional.testdata.search_film_collections import search_50_data
 
 
+@pytest.mark.parametrize(
+    'es_data',
+    [search_50_data]
+)
 @pytest.mark.asyncio
-async def test_search(es_write_data):
+async def test_search(es_write_data, es_data):
     # 1. Генерируем данные для ES
 
-
-    es_data = [{
-        'id': str(uuid.uuid4()),
-        'imdb_rating': 8.5,
-        'genre': [],
-        'title': 'The Star',
-        'description': 'New World',
-        'director': ['Stan'],
-        'actors_names': ['Ann', 'Bob'],
-        'writers_names': ['Ben', 'Howard'],
-        'actors': [
-            {'id': str(uuid.uuid4()), 'name': 'Ann'},
-            {'id': str(uuid.uuid4()), 'name': 'Bob'}
-        ],
-        'writers': [
-            {'id': str(uuid.uuid4()), 'name': 'Ben'},
-            {'id': str(uuid.uuid4()), 'name': 'Howard'}
-        ]
-    } for _ in range(50)]
-
-    # bulk_query = []
-    # for row in es_data:
-    #     bulk_query.extend([
-    #         json.dumps({'index': {'_index': test_settings.es_index, '_id': row[test_settings.es_id_field]}}),
-    #         json.dumps(row)
-    #     ])
-    #
-    # str_query = '\n'.join(bulk_query) + '\n'
-    #
-    # print(str_query)
-
-    # 2. Загружаем данные в ES
-
-    # es_client = AsyncElasticsearch(hosts=test_settings.es_host,
-    #                                validate_cert=False,
-    #                                use_ssl=False)
-    # if not await es_client.indices.exists(index=test_settings.es_index):
-    #     await es_client.indices.create(index=test_settings.es_index, body={'mappings': index_mappings[test_settings.es_index], 'settings': common_index_settings})
-    # response = await es_client.bulk(str_query, refresh=True)
-    # await es_client.close()
-
     await es_write_data(test_settings.es_index, es_data)
-
-    # if response['errors']:
-    #     raise Exception(f"{response['errors']}")
 
     # # 3. Запрашиваем данные из ES по API
     #
@@ -107,6 +68,6 @@ async def test_search(es_write_data):
     # 4. Проверяем ответ
 
     assert status == 200
-    assert len(body) == 51
+    assert len(body) == 50
 
 
