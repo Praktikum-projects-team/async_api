@@ -1,9 +1,10 @@
+import aiohttp
 import pytest
 
 from elasticsearch import AsyncElasticsearch
 
 from tests.functional.settings import test_settings
-from tests.functional.utils.helpers import get_es_bulk_query, create_index_if_not_exists
+from tests.functional.utils.helpers import get_es_bulk_query, create_index_if_not_exists, ApiResponse
 
 
 @pytest.fixture(scope='session')
@@ -23,5 +24,16 @@ def es_write_data(es_client):
         await es_client.close()
         if response['errors']:
             raise Exception('Ошибка записи данных в Elasticsearch')
+    return inner
+
+
+@pytest.fixture
+def make_get_request():
+    async def inner(url: str, query_data: list[dict]):
+        session = aiohttp.ClientSession()
+        async with session.get(url, params=query_data) as response:
+            resp = ApiResponse(status=response.status, body=await response.json())
+        await session.close()
+        return resp
     return inner
 

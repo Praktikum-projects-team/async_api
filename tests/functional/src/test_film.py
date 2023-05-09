@@ -38,7 +38,7 @@ import pytest
 
 from elasticsearch import AsyncElasticsearch
 
-from tests.functional.conftest import es_write_data
+from tests.functional.conftest import es_write_data, make_get_request
 from tests.functional.settings import test_settings
 from tests.functional.testdata.es_mapping import common_index_settings, index_mappings
 from tests.functional.testdata.search_film_collections import search_50_data
@@ -49,22 +49,15 @@ from tests.functional.testdata.search_film_collections import search_50_data
     [search_50_data]
 )
 @pytest.mark.asyncio
-async def test_search(es_write_data, es_data):
+async def test_search(es_write_data, make_get_request, es_data):
     await es_write_data(test_settings.es_index, es_data)
 
-    # # 3. Запрашиваем данные из ES по API
-    #
-    session = aiohttp.ClientSession()
     url = test_settings.service_url + '/api/v1/films/search'
     query_data = {'query': 'The Star'}
-    async with session.get('http://fastapi:8000/api/v1/films/search', params=query_data) as response:
-        body = await response.json()
-        headers = response.headers
-        status = response.status
-    await session.close()
 
+    response = await make_get_request(url, query_data)
 
-    assert status == 200
-    assert len(body) == 50
+    assert response.status == 200
+    assert len(response.body) == 50
 
 

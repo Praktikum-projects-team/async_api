@@ -42,7 +42,7 @@ class TestFilmSettings(BaseSettings):
     es_index_mapping: dict = {}
 
     redis_host: str = 'redis:6379'
-    service_url: str = 'fastapi:8000'
+    service_url: str = 'http://fastapi:8000'
 
 
 test_settings = TestFilmSettings()
