@@ -13,8 +13,7 @@ class TestSettings(BaseSettings):
     redis_host: str = Field(..., env='REDIS_HOST')
     redis_port: int = Field(..., env='REDIS_PORT')
 
-    service_url: str = 'http://fastapi:8000'
-    api_host: str = Field(..., env='APP_HOST')
+    api_host: str = Field(..., env='API_HOST')
     api_port: int = Field(..., env='APP_PORT')
 
 

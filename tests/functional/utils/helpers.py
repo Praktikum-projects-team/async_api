@@ -28,6 +28,6 @@ async def create_index_if_not_exists(es_client, index_name):
     if await es_client.indices.exists(index=index_name):
         return
     await es_client.indices.create(
-        index=test_settings.es_index,
+        index=index_name,
         body={'mappings': index_mappings[index_name], 'settings': common_index_settings}
     )

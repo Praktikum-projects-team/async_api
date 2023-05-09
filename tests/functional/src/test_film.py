@@ -21,7 +21,7 @@ async def test_search(es_write_data,
                       make_get_request,
                       query_data,
                       expected_answer):
-    await es_write_data(test_settings.es_index, search_50_data)
+    await es_write_data('movies', search_50_data)
     path = '/api/v1/films/search'
 
     response = await make_get_request(path, query_data)
