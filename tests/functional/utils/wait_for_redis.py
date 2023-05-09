@@ -3,13 +3,10 @@ import time
 
 import redis
 
-from tests.functional import settings
-
-redis_config = settings.RedisConfig()
-
+from tests.functional.settings import test_settings
 
 if __name__ == '__main__':
-    redis_client = redis.Redis(host=redis_config.host, port=redis_config.port, db=0)
+    redis_client = redis.Redis(host=test_settings.redis_host, port=test_settings.redis_port, db=0)
     while True:
         try:
             redis_client.ping()
