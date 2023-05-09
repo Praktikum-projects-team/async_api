@@ -50,8 +50,6 @@ from tests.functional.testdata.search_film_collections import search_50_data
 )
 @pytest.mark.asyncio
 async def test_search(es_write_data, es_data):
-    # 1. Генерируем данные для ES
-
     await es_write_data(test_settings.es_index, es_data)
 
     # # 3. Запрашиваем данные из ES по API
@@ -65,7 +63,6 @@ async def test_search(es_write_data, es_data):
         status = response.status
     await session.close()
 
-    # 4. Проверяем ответ
 
     assert status == 200
     assert len(body) == 50
