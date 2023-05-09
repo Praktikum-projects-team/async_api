@@ -47,7 +47,8 @@ async def es_write_data(
 async def make_get_request(
         aiohttp_session
 ):
-    async def inner(url: str, query_data: list[dict]):
+    async def inner(path: str, query_data: list[dict]):
+        url = f'http://{test_settings.api_host}:{test_settings.api_port}' + path
         async with aiohttp_session.get(url, params=query_data) as response:
             resp = ApiResponse(status=response.status, body=await response.json())
         return resp
