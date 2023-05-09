@@ -1,3 +1,9 @@
+import os
+
+
+logging_level = os.environ.get('LOGGING_LEVEL')
+
+
 LOG_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 LOG_DEFAULT_HANDLERS = ['console', ]
 
@@ -38,19 +44,19 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': LOG_DEFAULT_HANDLERS,
-            'level': 'INFO',
+            'level': logging_level,
         },
         'uvicorn.error': {
-            'level': 'INFO',
+            'level': logging_level,
         },
         'uvicorn.access': {
             'handlers': ['access'],
-            'level': 'INFO',
+            'level': logging_level,
             'propagate': False,
         },
     },
     'root': {
-        'level': 'INFO',
+        'level': logging_level,
         'formatter': 'verbose',
         'handlers': LOG_DEFAULT_HANDLERS,
     },

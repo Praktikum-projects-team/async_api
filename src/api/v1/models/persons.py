@@ -30,5 +30,3 @@ def person_to_api_detail(person: Person) -> PersonApi:
         full_name=person.full_name,
         films=person_films
     )
-
-
