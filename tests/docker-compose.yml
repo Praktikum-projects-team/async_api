@@ -1,0 +1,45 @@
+version: '3'
+services:
+  elastic:
+    container_name: elastic
+    image: ghcr.io/yp-middle-python-24/elasticsearch:8.7.0
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f 'http://elastic:9200/_cat/health'" ]
+      interval: 10s
+      timeout: 30s
+      retries: 2
+    ports:
+      - "9200:9200"
+
+  redis:
+    container_name: redis
+    image: redis:7
+    env_file:
+      - .env_test
+    ports:
+      - "6379:6379"
+
+  fastapi:
+    container_name: fastapi
+    build: ..
+    env_file:
+      - .env_test
+    depends_on:
+      - redis
+      - elastic
+    ports:
+      - "8000:8000"
+
+  tests:
+    container_name: tests
+    build: .
+    env_file:
+      - .env_test
+    depends_on:
+      - redis
+      - elastic
+      - fastapi

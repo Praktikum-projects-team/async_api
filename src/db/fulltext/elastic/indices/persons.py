@@ -1,12 +1,9 @@
-from typing import Optional
-
 from fastapi import Depends
 
 from core.config import ElasticConfig, CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from db.fulltext.abstract_indices.persons import AbstractPersonIndex
 from db.fulltext.elastic.elastic_fulltext_search import get_elastic_fulltext_search
-from models.person import Person
 
 
 class ESPersonIndex(AbstractPersonIndex):

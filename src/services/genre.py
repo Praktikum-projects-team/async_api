@@ -1,10 +1,7 @@
 from functools import lru_cache
-from typing import Optional
 
 from fastapi import Depends
 
-from models.genre import Genre
-from api.v1.utils import Page
 from db.fulltext.abstract_indices.genres import AbstractGenreIndex
 from db.fulltext.elastic.indices.genres import get_elastic_genre_index
 from services.base_service import BaseService

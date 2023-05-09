@@ -47,4 +47,3 @@ async def genre_details(
     if not genre:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail='genre not found')
     return genre_to_api(genre)
-
