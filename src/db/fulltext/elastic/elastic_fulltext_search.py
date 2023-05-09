@@ -16,12 +16,12 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
         self.elastic = elastic
         self.cache = cache
 
-    @with_cache()
+    @with_cache
     async def get_by_id(self, index_name: str, id: Any) -> dict:
         doc = await self.elastic.get(index=index_name, id=id)
         return doc['_source']
 
-    @with_cache()
+    @with_cache
     async def search_many(
             self,
             index_name: str,
