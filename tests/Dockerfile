@@ -10,4 +10,4 @@ RUN pip install --upgrade pip && pip install -r /tests/functional/requirements.t
 
 COPY . .
 
-CMD python3 /tests/functional/utils/wait_for_es.py && python3 /tests/functional/utils/wait_for_redis.py && pytest /tests/functional/src
+CMD sh -c "python3 /tests/functional/utils/wait_for_es.py && python3 /tests/functional/utils/wait_for_redis.py && pytest /tests/functional/src"
