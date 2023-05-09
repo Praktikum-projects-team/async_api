@@ -33,3 +33,16 @@ class CacheTTLConfig(BaseSettings):
     movies_ttl: int = 60 * 5
     persons_ttl: int = 60 * 5
     genres_ttl: int = 60 * 5
+
+
+class TestFilmSettings(BaseSettings):
+    es_host: str = Field('http://elastic:9200')
+    es_index: str = 'movies'
+    es_id_field: str = 'id'
+    es_index_mapping: dict = {}
+
+    redis_host: str = 'redis:6379'
+    service_url: str = 'fastapi:8000'
+
+
+test_settings = TestFilmSettings()
