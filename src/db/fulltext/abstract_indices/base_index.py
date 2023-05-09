@@ -2,7 +2,6 @@ from typing import Optional, Any
 
 from elasticsearch import NotFoundError
 
-from core.config import CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from core.base_model import OrjsonBaseModel
 from models.base_model import BaseServiceModelChild
