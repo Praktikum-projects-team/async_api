@@ -2,7 +2,6 @@ from typing import Optional, Any
 
 from elasticsearch import NotFoundError
 
-from core.config import CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from core.base_model import OrjsonBaseModel
 from models.base_model import BaseServiceModelChild
@@ -10,10 +9,9 @@ from models.base_model import BaseServiceModelChild
 
 class AbstractFulltextIndex:
 
-    def __init__(self, searcher: AbstractFulltextSearch, index_name: str, cache_ttl: Optional[int] = None):
+    def __init__(self, searcher: AbstractFulltextSearch, index_name: str):
         self.searcher = searcher
         self.index_name = index_name
-        self.searcher.cache_ttl_in_seconds = cache_ttl or CacheTTLConfig().default_ttl
 
     @property
     def model(self) -> type(OrjsonBaseModel):

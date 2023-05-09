@@ -3,6 +3,7 @@ from typing import Any, Union, Optional
 from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
+from db.cache.cache_decorator import with_cache
 from api.v1.utils import SortType
 from db.cache.abstract_cache import AbstractCache
 from db.cache.redis_cache import get_redis_cache
@@ -11,16 +12,17 @@ from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 
 
 class ElasticFulltextSearch(AbstractFulltextSearch):
-
     def __init__(self, elastic: AsyncElasticsearch, cache: AbstractCache):
-        super().__init__(cache)
         self.elastic = elastic
+        self.cache = cache
 
-    async def get_by_id_without_cache(self, index_name: str, id: Any) -> dict:
+    @with_cache
+    async def get_by_id(self, index_name: str, id: Any) -> dict:
         doc = await self.elastic.get(index=index_name, id=id)
         return doc['_source']
 
-    async def search_many_without_cache(
+    @with_cache
+    async def search_many(
             self,
             index_name: str,
             query: Union[list[dict], str],
@@ -52,8 +54,17 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
         return field + ':' + sort_type.value
 
 
-def get_elastic_fulltext_search(
-        elastic: AsyncElasticsearch = Depends(get_elastic),
-        cache: AbstractCache = Depends(get_redis_cache),
-) -> ElasticFulltextSearch:
-    return ElasticFulltextSearch(elastic, cache)
+class GetElasticFulltextSearch:
+    def __init__(
+            self,
+            ttl_in_seconds: int,
+    ):
+        self.ttl_in_seconds = ttl_in_seconds
+
+    def __call__(
+            self,
+            elastic: AsyncElasticsearch = Depends(get_elastic),
+            cache: AbstractCache = Depends(get_redis_cache)
+    ) -> ElasticFulltextSearch:
+        cache.ttl_in_seconds = self.ttl_in_seconds
+        return ElasticFulltextSearch(elastic, cache)

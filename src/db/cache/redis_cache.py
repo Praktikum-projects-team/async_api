@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 import orjson
 from fastapi import Depends
@@ -10,11 +10,12 @@ from db.redis import get_redis
 
 
 class RedisCache(AbstractCache):
-    def __init__(self, redis: Redis):
+    def __init__(self, redis: Redis, ttl_in_seconds: Optional[int] = None):
+        super().__init__(ttl_in_seconds)
         self.redis = redis
 
-    def get_key(self, **kwargs):
-        return str(sorted(kwargs.items()))
+    def get_key(self, *args, **kwargs):
+        return str(args) + str(sorted(kwargs.items()))
 
     async def set_cache(
             self,
