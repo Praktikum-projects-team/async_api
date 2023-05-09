@@ -34,7 +34,7 @@ class AbstractFulltextIndex:
     async def _search_by_query(
             self,
             query: Any,
-            sort: Optional[str] = None,
+            sort: Optional[dict] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
     ) -> list[BaseServiceModelChild]:

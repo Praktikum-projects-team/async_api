@@ -1,5 +1,3 @@
-from typing import Optional
-
 from fastapi import Depends
 
 from core.config import ElasticConfig, CacheTTLConfig

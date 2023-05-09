@@ -1,12 +1,9 @@
-from typing import Optional
-
 from fastapi import Depends
 
 from core.config import ElasticConfig, CacheTTLConfig
 from db.fulltext.abstract_fulltext_search import AbstractFulltextSearch
 from db.fulltext.abstract_indices.genres import AbstractGenreIndex
 from db.fulltext.elastic.elastic_fulltext_search import GetElasticFulltextSearch
-from models.genre import Genre
 
 
 class ESGenreIndex(AbstractGenreIndex):

@@ -4,6 +4,7 @@ from elasticsearch import AsyncElasticsearch
 from fastapi import Depends
 
 from db.cache.cache_decorator import with_cache
+from api.v1.utils import SortType
 from db.cache.abstract_cache import AbstractCache
 from db.cache.redis_cache import get_redis_cache
 from db.elastic import get_elastic
@@ -25,7 +26,7 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
             self,
             index_name: str,
             query: Union[list[dict], str],
-            sort: Optional[str] = None,
+            sort: Optional[dict] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
     ) -> list[dict]:
@@ -34,14 +35,23 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
         if type(query) == dict:
             body = {"query": {"bool": query}}
 
+        sort_type = await self.format_sorting(sort)
+
         docs = await self.elastic.search(
             index=index_name,
-            sort=sort,
+            sort=sort_type,
             size=page_size,
             from_=page_from,
             body=body,
         )
         return [doc['_source'] for doc in docs['hits']['hits']]
+
+    @staticmethod
+    async def format_sorting(sort: dict[str: SortType]) -> Optional[Any]:
+        if not sort:
+            return None
+        field, sort_type = sort.popitem()
+        return field + ':' + sort_type.value
 
 
 class GetElasticFulltextSearch:

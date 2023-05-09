@@ -12,7 +12,7 @@ class AbstractFulltextSearch(abc.ABC):
             self,
             index_name: str,
             query: Any,
-            sort: Optional[str] = None,
+            sort: Optional[dict] = None,
             page_size: Optional[int] = None,
             page_from: Optional[int] = None,
     ) -> list[dict]:

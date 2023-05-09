@@ -20,27 +20,27 @@ class Page:
         return self.page_size * (self.page_number - 1)
 
 
-class FilmSortEnum(str, Enum):
-    imdb_rating_asc: str = 'imdb_rating:asc'
-    imdb_rating_asc_alias: str = 'imdb_rating'
-    imdb_rating_desc: str = 'imdb_rating:desc'
-    imdb_rating_desc_alias: str = '-imdb_rating'
+class SortType(str, Enum):
+    ASC = 'asc'
+    DESC = 'desc'
 
 
 class FilmSort:
+    SORTABLE_FIELDS = ('imdb_rating',)
+
     def __init__(
             self,
-            sort: FilmSortEnum = Query(
-                FilmSortEnum.imdb_rating_desc_alias,
+            sort: str = Query(
+                '-imdb_rating',
                 title='Sort field',
                 description='Sort field (default: "-imdb_rating", sort by imdb_rating in descending order)'
             )
     ) -> None:
-        if sort == FilmSortEnum.imdb_rating_asc_alias:
-            sort = FilmSortEnum.imdb_rating_asc
-        if sort == FilmSortEnum.imdb_rating_desc_alias:
-            sort = FilmSortEnum.imdb_rating_desc
-        self.sort = sort
+        sort_type = SortType.DESC if sort.startswith('-') else SortType.ASC
+        field_name = sort.removeprefix('-')
+        if field_name not in self.SORTABLE_FIELDS:
+            raise ValueError(f'can not sort by {field_name}')
+        self.sort = {field_name: sort_type}
 
 
 class FilmFilter:
