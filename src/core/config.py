@@ -1,9 +1,6 @@
 import os
-from logging import config as logging_config
-from pydantic import BaseSettings, Field
-from core.logger import LOGGING
 
-logging_config.dictConfig(LOGGING)
+from pydantic import BaseSettings, Field
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -15,7 +12,6 @@ class AppConfig(BaseSettings):
     port: int = Field(..., env='APP_PORT')
     default_page_size: int = Field(..., env='DEFAULT_PAGE_SIZE')
     is_debug: bool = Field(..., env='IS_DEBUG')
-    logging_level: str = Field(..., env='LOGGING_LEVEL')
 
 
 class ElasticConfig(BaseSettings):

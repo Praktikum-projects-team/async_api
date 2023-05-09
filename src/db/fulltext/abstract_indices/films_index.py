@@ -16,7 +16,7 @@ class AbstractFilmIndex(abc.ABC, AbstractFulltextIndex):
     async def get_films_by_filter(
             self,
             raw_filter: str,
-            sort: Optional[str],
+            sort: Optional[dict],
             page_size: Optional[int],
             page_from: Optional[int],
     ) -> [list[Film]]:  # only works with genres for now
@@ -30,7 +30,7 @@ class AbstractFilmIndex(abc.ABC, AbstractFulltextIndex):
     async def get_films_by_person(
             self,
             person_id: str,
-            sort: Optional[str],
+            sort: Optional[dict],
             page_size: Optional[int],
             page_from: Optional[int],
     ) -> [list[Film]]:
