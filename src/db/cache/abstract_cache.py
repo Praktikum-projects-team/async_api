@@ -1,11 +1,16 @@
 import abc
-from typing import Any, Union
+from typing import Any, Union, Optional
+
+from core.config import CacheTTLConfig
 
 
 class AbstractCache(abc.ABC):
 
+    def __init__(self, ttl_in_seconds: Optional[int] = None):
+        self.ttl_in_seconds = ttl_in_seconds or CacheTTLConfig().default_ttl
+
     @abc.abstractmethod
-    def get_key(self, **kwargs) -> str:
+    def get_key(self, *args, **kwargs) -> str:
         raise NotImplementedError
 
     @abc.abstractmethod
