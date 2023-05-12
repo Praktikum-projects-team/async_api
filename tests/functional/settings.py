@@ -14,7 +14,7 @@ class TestSettings(BaseSettings):
     redis_port: int = Field(..., env='REDIS_PORT')
 
     api_host: str = Field(..., env='API_HOST')
-    api_port: int = Field(..., env='APP_PORT')
+    api_port: int = Field(..., env='API_PORT')
 
 
 test_settings = TestSettings()

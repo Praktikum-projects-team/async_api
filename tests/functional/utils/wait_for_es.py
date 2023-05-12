@@ -11,8 +11,9 @@ if __name__ == '__main__':
     )
     while True:
         try:
-            es_client.ping()
-            logging.info('Elasticsearch started')
+            if not es_client.ping():
+                continue
+            logging.info(f'Elasticsearch started http://{test_settings.es_host}:{test_settings.es_port}')
             break
         except ConnectionError:
             time.sleep(1)

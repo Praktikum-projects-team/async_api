@@ -29,7 +29,7 @@ class RedisConfig(BaseSettings):
 
 
 class CacheTTLConfig(BaseSettings):
-    default_ttl: int = 60 * 30
-    movies_ttl: int = 60 * 5
-    persons_ttl: int = 60 * 5
-    genres_ttl: int = 60 * 5
+    default_ttl: int = Field(..., env='DEFAULT_TTL')
+    movies_ttl: int = Field(..., env='MOVIES_TTL')
+    persons_ttl: int = Field(..., env='PERSONS_TTL')
+    genres_ttl: int = Field(..., env='GENRES_TTL')
