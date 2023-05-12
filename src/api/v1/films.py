@@ -68,7 +68,7 @@ async def film_details(
     return FilmDetailsApi(
         uuid=film.id,
         title=film.title,
-        imbd_rating=film.imdb_rating,
+        imdb_rating=film.imdb_rating,
         description=film.description,
         directors=[person_to_api(director) for director in film.directors],
         actors=[person_to_api(actor) for actor in film.actors],
