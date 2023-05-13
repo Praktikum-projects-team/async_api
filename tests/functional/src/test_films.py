@@ -259,7 +259,7 @@ class TestCache:
         film_data = await get_films_data(1)
         film_uuid = await get_film_uuid_from_film_data(film_data)
         await es_write_data(EsIndex.MOVIES, film_data)
-        await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'uuid': film_uuid}}})
+        await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
         await sleep(diff_time)
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
@@ -267,13 +267,12 @@ class TestCache:
         assert response.status == 200, 'Wrong status code'
         assert response.body.get('uuid') == film_uuid, 'Wrong uuid in response'
 
-    @pytest.mark.skip(reason="Кеш не вычищается по истечении ttl")
     @pytest.mark.asyncio
     async def test_film_from_cache_redis_ttl_expired(self, es_write_data, es_delete_data, make_get_request):
         film_data = await get_films_data(1)
         film_uuid = await get_film_uuid_from_film_data(film_data)
         await es_write_data(EsIndex.MOVIES, film_data)
-        await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'uuid': film_uuid}}})
+        await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
@@ -294,14 +293,13 @@ class TestCache:
 
         for film_data in films_data:
             film_uuid = await get_film_uuid_from_film_data([film_data])
-            await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'uuid': film_uuid}}})
+            await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
         await sleep(diff_time)
         response_cache = await make_get_request(FILMS_URL, query_params)
 
         assert response_cache.status == 200, 'Wrong status code'
         assert response_es.body == response_cache.body, 'Response dont match'
 
-    @pytest.mark.skip(reason="Кеш не вычищается по истечении ttl")
     @pytest.mark.asyncio
     async def test_films_params_form_cache_redid_ttl_expired(
             self, es_write_data, es_delete_data, make_get_request
@@ -313,7 +311,7 @@ class TestCache:
 
         for film_data in films_data:
             film_uuid = await get_film_uuid_from_film_data([film_data])
-            await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'uuid': film_uuid}}})
+            await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(FILMS_URL, query_params)
