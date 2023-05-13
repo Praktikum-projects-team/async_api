@@ -143,10 +143,6 @@ class TestFilms:
 
         assert response.status == 200, 'Wrong status code'
 
-    @pytest.mark.skip(
-        reason='TODO: нужно добавить в команде обработку максимальных значений, '
-               'сейчас при этих параметрах команда 500-ит'
-    )
     @pytest.mark.parametrize('page_number', [700, 1000, 2000])
     @pytest.mark.asyncio
     async def test_films_page_number_max(self, es_write_data, make_get_request, page_number):
@@ -155,7 +151,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'page_number': page_number})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == 400, 'Wrong status code'
 
     @pytest.mark.parametrize(
         'page_number, msg', [
