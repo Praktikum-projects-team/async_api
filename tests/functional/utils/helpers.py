@@ -10,7 +10,7 @@ from tests.functional.testdata.es_mapping import index_mappings, common_index_se
 
 class ApiResponse(BaseModel):
     status: HTTPStatus
-    body: Union[dict, list]
+    body: Union[list, dict]
 
 
 def get_es_bulk_query(index_name: str, data: list[dict]) -> str:
