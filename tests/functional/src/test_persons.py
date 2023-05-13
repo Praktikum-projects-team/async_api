@@ -94,9 +94,6 @@ class TestPersons:
             (2.5, 'value is not a valid integer'),
             ('pagesize', 'value is not a valid integer'),
             ('%#$*', 'value is not a valid integer'),
-            # (None, 'value is not a valid integer'),
-            # (True, 'value is not a valid integer'),
-            # (False, 'value is not a valid integer')
         ]
     )
     @pytest.mark.asyncio
@@ -170,9 +167,6 @@ class TestPersons:
             (2.5, 'value is not a valid integer'),
             ('pagesize', 'value is not a valid integer'),
             ('%#$*', 'value is not a valid integer'),
-            # (None, 'value is not a valid integer'),
-            # (True, 'value is not a valid integer'),
-            # (False, 'value is not a valid integer')
         ]
     )
     @pytest.mark.asyncio

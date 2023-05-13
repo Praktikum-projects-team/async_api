@@ -95,9 +95,6 @@ class TestFilms:
             (2.5, 'value is not a valid integer'),
             ('pagesize', 'value is not a valid integer'),
             ('%#$*', 'value is not a valid integer'),
-            # (None, 'value is not a valid integer'),
-            # (True, 'value is not a valid integer'),
-            # (False, 'value is not a valid integer')
         ]
     )
     @pytest.mark.asyncio
@@ -160,9 +157,6 @@ class TestFilms:
             (2.5, 'value is not a valid integer'),
             ('pagesize', 'value is not a valid integer'),
             ('%#$*', 'value is not a valid integer'),
-            # (None, 'value is not a valid integer'),
-            # (True, 'value is not a valid integer'),
-            # (False, 'value is not a valid integer')
         ]
     )
     @pytest.mark.asyncio
@@ -199,12 +193,8 @@ class TestFilms:
         assert response.status == 200, 'Wrong status code'
         await check_ratings(imdb_ratings, sort)
 
-    @pytest.mark.skip(
-        reason='TODO: нужно добавить в команде обработку невалидных значений, сейчас 500-ит'
-    )
     @pytest.mark.parametrize('sort', [
         0, 1, -1, 2.5, 'sort', '%#$*',
-        # None, True, False
     ])
     @pytest.mark.asyncio
     async def test_films_sort_incorrect(self, es_write_data, make_get_request, sort):
@@ -233,7 +223,6 @@ class TestFilms:
 
     @pytest.mark.parametrize('genre_uuid', [
         '77777777-0d90-4353-88ba-4ccc5d2c07ff', 'Western', 0, 1, -1, 2.5, '%#$*',
-        # None, True, False
     ])
     @pytest.mark.asyncio
     async def test_films_filter_genre_incorrect(self, es_write_data, make_get_request, genre_uuid):

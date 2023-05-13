@@ -1,7 +1,8 @@
 from enum import Enum
+from http import HTTPStatus
 from typing import Optional
 
-from fastapi import Query
+from fastapi import Query, HTTPException
 
 from core.config import AppConfig
 
@@ -39,7 +40,7 @@ class FilmSort:
         sort_type = SortType.DESC if sort.startswith('-') else SortType.ASC
         field_name = sort.removeprefix('-')
         if field_name not in self.SORTABLE_FIELDS:
-            raise ValueError(f'can not sort by {field_name}')
+            raise HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=f'can not sort by {field_name}')
         self.sort = {field_name: sort_type}
 
 
