@@ -1,6 +1,7 @@
 from typing import Any, Union, Optional
 
-from elasticsearch import AsyncElasticsearch
+import backoff
+from elasticsearch import AsyncElasticsearch, TransportError
 from fastapi import Depends
 
 from db.cache.cache_decorator import with_cache
@@ -17,11 +18,21 @@ class ElasticFulltextSearch(AbstractFulltextSearch):
         self.cache = cache
 
     @with_cache
+    @backoff.on_exception(
+        backoff.expo,
+        TransportError,
+        max_tries=5,
+    )
     async def get_by_id(self, index_name: str, id: Any) -> dict:
         doc = await self.elastic.get(index=index_name, id=id)
         return doc['_source']
 
     @with_cache
+    @backoff.on_exception(
+        backoff.expo,
+        TransportError,
+        max_tries=5,
+    )
     async def search_many(
             self,
             index_name: str,
