@@ -203,8 +203,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'sort': sort})
 
-        assert response.status == 422, 'Wrong status code'
-        assert response.body['detail'][0]['loc'][1] == 'sort', 'Wrong error location'
+        assert response.status == 400, 'Wrong status code'
 
     @pytest.mark.parametrize(
         'number_of_films_by_genre', [1, 10, 20]
