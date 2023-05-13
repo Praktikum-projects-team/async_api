@@ -1,6 +1,6 @@
 import json
 from http import HTTPStatus
-from typing import Union
+from typing import Union, Any
 
 from pydantic import BaseModel
 
@@ -10,7 +10,7 @@ from tests.functional.testdata.es_mapping import index_mappings, common_index_se
 
 class ApiResponse(BaseModel):
     status: HTTPStatus
-    body: Union[dict, list]
+    body: Any
 
 
 def get_es_bulk_query(index_name: str, data: list[dict]) -> str:
