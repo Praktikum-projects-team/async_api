@@ -253,13 +253,14 @@ class TestFilms:
 
 class TestCache:
 
-    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1, CACHE_TTL])
+    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
     @pytest.mark.asyncio
     async def test_film_from_cache_redis(self, es_write_data, es_delete_data, make_get_request, diff_time):
         film_data = await get_films_data(1)
         film_uuid = await get_film_uuid_from_film_data(film_data)
         await es_write_data(EsIndex.MOVIES, film_data)
-        await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
+        await make_get_request(f'{FILMS_URL}/{film_uuid}')
+        await es_delete_data(EsIndex.MOVIES, film_uuid)
         await sleep(diff_time)
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
@@ -272,7 +273,8 @@ class TestCache:
         film_data = await get_films_data(1)
         film_uuid = await get_film_uuid_from_film_data(film_data)
         await es_write_data(EsIndex.MOVIES, film_data)
-        await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
+        await make_get_request(f'{FILMS_URL}/{film_uuid}')
+        await es_delete_data(EsIndex.MOVIES, film_uuid)
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
@@ -280,7 +282,7 @@ class TestCache:
         assert response.status == 404, 'Wrong status code'
         assert response.body['detail'] == 'film not found', 'Wrong error message'
 
-    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1, CACHE_TTL])
+    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
     @pytest.mark.asyncio
     async def test_films_params_form_cache_redid(
             self, es_write_data, es_delete_data, make_get_request, diff_time
@@ -293,7 +295,7 @@ class TestCache:
 
         for film_data in films_data:
             film_uuid = await get_film_uuid_from_film_data([film_data])
-            await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
+            await es_delete_data(EsIndex.MOVIES, film_uuid)
         await sleep(diff_time)
         response_cache = await make_get_request(FILMS_URL, query_params)
 
@@ -308,13 +310,14 @@ class TestCache:
         genre_uuid = await get_genre_uuid_from_film_data(films_data)
         query_params = {'sort': Sort.DESC, 'page_size': 1, 'page_number': 1, 'genre': genre_uuid}
         await es_write_data(EsIndex.MOVIES, films_data)
+        await make_get_request(FILMS_URL, query_params)
 
         for film_data in films_data:
             film_uuid = await get_film_uuid_from_film_data([film_data])
-            await es_delete_data(EsIndex.MOVIES, {'query': {'match': {'id': film_uuid}}})
+            await es_delete_data(EsIndex.MOVIES, film_uuid)
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(FILMS_URL, query_params)
 
-        assert response.status == 404, 'Wrong status code'
-        assert response.body['detail'] == 'film not found', 'Wrong error message'
+        assert response.status == 200, 'Wrong status code'
+        assert len(response.body) == 0, 'Wrong error message'

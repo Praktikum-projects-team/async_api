@@ -25,6 +25,7 @@ class RedisCache(AbstractCache):
             key_extra: dict[str: Any] = None,
             ttl: int = None
     ):
+        ttl = ttl or self.ttl_in_seconds
         try:
             await self.redis.set(name=key, value=orjson.dumps(value), ex=ttl)
         except Exception as exc:

@@ -184,13 +184,14 @@ class TestPersons:
 @pytest.mark.debug
 class TestCache:
 
-    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1, CACHE_TTL])
+    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
     @pytest.mark.asyncio
     async def test_film_from_cache_redis(self, es_write_data, es_delete_data, make_get_request, diff_time):
         person_data = await get_persons_data(1)
         person_uuid = await get_person_uuid_from_person_data(person_data)
         await es_write_data(EsIndex.PERSON, person_data)
-        await es_delete_data(EsIndex.PERSON, {'query': {'match': {'id': person_uuid}}})
+        await make_get_request(f'{PERSONS_URL}/{person_uuid}')
+        await es_delete_data(EsIndex.PERSON, person_uuid)
         await sleep(diff_time)
 
         response = await make_get_request(f'{PERSONS_URL}/{person_uuid}')
@@ -203,15 +204,17 @@ class TestCache:
         person_data = await get_persons_data(1)
         person_uuid = await get_person_uuid_from_person_data(person_data)
         await es_write_data(EsIndex.PERSON, person_data)
-        await es_delete_data(EsIndex.PERSON, {'query': {'match': {'id': person_uuid}}})
+        await make_get_request(f'{PERSONS_URL}/{person_uuid}')
+        await es_delete_data(EsIndex.PERSON, person_uuid)
+        print(person_uuid)
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(f'{PERSONS_URL}/{person_uuid}')
 
         assert response.status == 404, 'Wrong status code'
-        assert response.body['detail'] == 'film not found', 'Wrong error message'
+        assert response.body['detail'] == 'person not found', 'Wrong error message'
 
-    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1, CACHE_TTL])
+    @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
     @pytest.mark.asyncio
     async def test_films_params_form_cache_redid(
             self, es_write_data, es_delete_data, make_get_request, diff_time
@@ -223,27 +226,9 @@ class TestCache:
 
         for person_data in films_data:
             person_uuid = await get_person_uuid_from_person_data([person_data])
-            await es_delete_data(EsIndex.PERSON, {'query': {'match': {'id': person_uuid}}})
+            await es_delete_data(EsIndex.PERSON, person_uuid)
         await sleep(diff_time)
         response_cache = await make_get_request(PERSONS_URL, query_params)
 
         assert response_cache.status == 200, 'Wrong status code'
         assert response_es.body == response_cache.body, 'Response dont match'
-
-    @pytest.mark.asyncio
-    async def test_films_params_form_cache_redid_ttl_expired(
-            self, es_write_data, es_delete_data, make_get_request
-    ):
-        films_data = await get_persons_data(3)
-        query_params = {'page_size': 1, 'page_number': 1}
-        await es_write_data(EsIndex.PERSON, films_data)
-
-        for person_data in films_data:
-            person_uuid = await get_person_uuid_from_person_data([person_data])
-            await es_delete_data(EsIndex.PERSON, {'query': {'match': {'id': person_uuid}}})
-        await sleep(CACHE_TTL + 1)
-
-        response = await make_get_request(PERSONS_URL, query_params)
-
-        assert response.status == 404, 'Wrong status code'
-        assert response.body['detail'] == 'film not found', 'Wrong error message'

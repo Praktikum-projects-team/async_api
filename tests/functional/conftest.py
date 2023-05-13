@@ -49,9 +49,9 @@ async def es_write_data(es_client):
 
 @pytest.fixture
 async def es_delete_data(es_client):
-    async def inner(index: str, query: dict):
+    async def inner(index: str, query):
         if await es_client.indices.exists(index=index):
-            await es_client.delete_by_query(index=index, body=query)
+            await es_client.delete(index=index, id=query)
         else:
             raise Exception('Индекс не найден в Elasticsearch')
 
