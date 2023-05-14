@@ -1,9 +1,10 @@
 from asyncio import sleep
+from http import HTTPStatus
 
 import pytest
 
 from tests.functional.testdata.genres import get_genres_data, get_genre_uuid
-from tests.functional.utils.constants import CACHE_TTL, DEFAULT_PAGE_SIZE, EsIndex, Sort
+from tests.functional.utils.constants import CACHE_TTL, DEFAULT_PAGE_SIZE, EsIndex
 from tests.functional.utils.routes import GENRES_URL
 import logging
 
@@ -17,7 +18,7 @@ class TestGenre:
         await es_write_data(EsIndex.GENRE, genre)
         response = await make_get_request(f'{GENRES_URL}/{genre_uuid}')
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert 'uuid' in response.body, 'No uuid in response'
         assert 'name' in response.body, 'No genre name in response'
         assert response.body['uuid'] == genre_uuid, 'Wrong uuid in response'
@@ -31,7 +32,7 @@ class TestGenre:
         await es_write_data(EsIndex.GENRE, genre)
         response = await make_get_request(f'{GENRES_URL}/{wrong_uuid}')
 
-        assert response.status == 404, 'Wrong status code'
+        assert response.status == HTTPStatus.NOT_FOUND, 'Wrong status code'
         assert response.body['detail'] == 'genre not found', 'Wrong error message'
 
 
@@ -43,7 +44,7 @@ class TestGenres:
         response = await make_get_request(GENRES_URL)
         response_first_page = await make_get_request(GENRES_URL, {'page_number': 1})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == DEFAULT_PAGE_SIZE, 'Wrong page size in response'
         assert response == response_first_page, 'Default page and first page are not the same'
         for genre in response.body:
@@ -57,7 +58,7 @@ class TestGenres:
         await es_write_data(EsIndex.GENRE, genres)
         response = await make_get_request(GENRES_URL, {'page_size': page_size})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) <= int(page_size), 'Wrong page size in response'
 
     @pytest.mark.parametrize(
@@ -78,7 +79,7 @@ class TestGenres:
         await es_write_data(EsIndex.GENRE, genres)
         response = await make_get_request(GENRES_URL, {'page_size': page_size})
 
-        assert response.status == 422, 'Wrong status code'
+        assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY, 'Wrong status code'
         assert response.body['detail'][0]['loc'][1] == 'page_size', 'Wrong error location'
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
@@ -89,19 +90,18 @@ class TestGenres:
         response_first_page = await make_get_request(GENRES_URL, {'page_number': 1})
         response_second_page = await make_get_request(GENRES_URL, {'page_number': 2})
 
-        assert response_first_page.status == 200, 'Wrong status code'
-        assert response_second_page.status == 200, 'Wrong status code'
+        assert response_first_page.status == HTTPStatus.OK, 'Wrong status code'
+        assert response_second_page.status == HTTPStatus.OK, 'Wrong status code'
         assert response_first_page != response_second_page, 'Pages are the same'
 
-    @pytest.mark.parametrize('page_number', [15, '10',])
-        # , 200, 1000]) ошибка 505 при запросе большого количества страниц
+    @pytest.mark.parametrize('page_number', [15, '10', 200, 1000])
     @pytest.mark.asyncio
     async def test_all_genres_page_number(self, es_write_data, make_get_request, page_number):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
         response = await make_get_request(GENRES_URL, {'page_number': page_number})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
 
     @pytest.mark.parametrize(
         'page_number, msg', [
@@ -118,19 +118,19 @@ class TestGenres:
         await es_write_data(EsIndex.GENRE, genres)
         response = await make_get_request(GENRES_URL, {'page_number': page_number})
 
-        assert response.status == 422, 'Wrong status code'
+        assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY, 'Wrong status code'
         assert response.body['detail'][0]['loc'][1] == 'page_number', 'Wrong error location'
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
-    @pytest.mark.parametrize('page_size, page_number', [(1, 15), (20, 200), ('10', '10'),])
-                                                        # (200, 1000), (1000, 200)])
+    @pytest.mark.parametrize('page_size, page_number', [(1, 15), (20, 200), ('10', '10'),
+                                                        (200, 1000), (1000, 200)])
     @pytest.mark.asyncio
     async def test_all_genres(self, es_write_data, make_get_request, page_size, page_number):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE * 2)
         await es_write_data(EsIndex.GENRE, genres)
         response = await make_get_request(GENRES_URL, {'page_size': page_size, 'page_number': page_number})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) <= int(page_size), 'Wrong page size in response'
 
 
@@ -145,7 +145,7 @@ class TestCache:
         await sleep(diff_time)
         response = await make_get_request(f'{GENRES_URL}/{genre_uuid}')
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert response.body['uuid'] == genre_uuid, 'Wrong uuid in response'
 
     @pytest.mark.skip(reason="Кеш не вычищается по истечении ttl")
@@ -158,7 +158,7 @@ class TestCache:
         await sleep(CACHE_TTL + 1)
         response = await make_get_request(f'{GENRES_URL}/{genre_uuid}')
 
-        assert response.status == 404, 'Wrong status code'
+        assert response.status == HTTPStatus.NOT_FOUND, 'Wrong status code'
         assert response.body['detail'] == 'genre not found', 'Wrong error message'
 
     @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1, CACHE_TTL])
@@ -173,7 +173,7 @@ class TestCache:
         await sleep(diff_time)
         response_cache = await make_get_request(GENRES_URL, {'page_size': 1, 'page_number': 1})
 
-        assert response_cache.status == 200, 'Wrong status code'
+        assert response_cache.status == HTTPStatus.OK, 'Wrong status code'
         assert response_es.body == response_cache.body, 'Response dont match'
 
     @pytest.mark.skip(reason="Кеш не вычищается по истечении ttl")
@@ -187,5 +187,5 @@ class TestCache:
         await sleep(CACHE_TTL + 1)
         response_cache = await make_get_request(GENRES_URL, {'page_size': 1, 'page_number': 1})
 
-        assert response_cache.status == 404, 'Wrong status code'
+        assert response_cache.status == HTTPStatus.NOT_FOUND, 'Wrong status code'
         assert response_cache.body['detail'] == 'film not found', 'Wrong error message'
