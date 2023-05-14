@@ -1,6 +1,13 @@
+import aiohttp
 import pytest
 from tests.functional.settings import test_settings
 from tests.functional.utils.helpers import ApiResponse
+
+
+@pytest.fixture(scope='session')
+async def aiohttp_session():
+    async with aiohttp.ClientSession() as session:
+        yield session
 
 
 @pytest.fixture
