@@ -46,12 +46,11 @@ class TestFilms:
         await es_write_data(EsIndex.MOVIES, films_data)
 
         response = await make_get_request(FILMS_URL)
-
+        expected_fields = ('uuid', 'title', 'imdb_rating')
         assert response.status == HTTPStatus.OK, 'Wrong status code'
         for film in response.body:
-            assert 'uuid' in film, 'No uuid in response'
-            assert 'title' in film, 'No title in response'
-            assert 'imdb_rating' in film, 'No imdb_rating in response'
+            for field in expected_fields:
+                assert field in film, f'No {field} in response'
 
     async def test_films_page_size_default(self, es_write_data, make_get_request):
         films_data = await get_films_data(DEFAULT_PAGE_SIZE)
@@ -111,7 +110,7 @@ class TestFilms:
         assert response_without_page_number == response_with_page_number_1, 'Pages are not the same'
 
     async def test_films_page_number_compare(self, es_write_data, make_get_request):
-        films_data = await get_films_data(DEFAULT_PAGE_SIZE*2)
+        films_data = await get_films_data(DEFAULT_PAGE_SIZE * 2)
         await es_write_data(EsIndex.MOVIES, films_data)
 
         response_with_page_number_1 = await make_get_request(FILMS_URL, {'page_number': 1})
