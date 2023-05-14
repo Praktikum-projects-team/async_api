@@ -1,4 +1,5 @@
 from asyncio import sleep
+from http import HTTPStatus
 
 import pytest
 
@@ -18,7 +19,7 @@ class TestFilm:
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert 'uuid' in response.body, 'No uuid in response'
         assert 'title' in response.body, 'No title in response'
         assert 'imdb_rating' in response.body, 'No imdb_rating in response'
@@ -39,7 +40,7 @@ class TestFilm:
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
 
-        assert response.status == 404, 'Wrong status code'
+        assert response.status == HTTPStatus.NOT_FOUND, 'Wrong status code'
         assert response.body['detail'] == 'film not found', 'Wrong error message'
 
 
@@ -51,7 +52,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL)
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         for film in response.body:
             assert 'uuid' in film, 'No uuid in response'
             assert 'title' in film, 'No title in response'
@@ -64,7 +65,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL)
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == DEFAULT_PAGE_SIZE, 'Wrong page size in response'
 
     @pytest.mark.parametrize('page_size', [1, 15, 19, 20, 21, '10'])
@@ -75,7 +76,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'page_size': page_size})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == int(page_size), 'Wrong page size in response'
 
     @pytest.mark.asyncio
@@ -85,7 +86,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'page_size': DEFAULT_PAGE_SIZE + 1000})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) <= DEFAULT_PAGE_SIZE + 1000, 'Wrong page size in response'
 
     @pytest.mark.parametrize(
@@ -104,7 +105,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'page_size': page_size})
 
-        assert response.status == 422, 'Wrong status code'
+        assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY, 'Wrong status code'
         assert response.body['detail'][0]['loc'][1] == 'page_size', 'Wrong error location'
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
@@ -116,7 +117,7 @@ class TestFilms:
         response_without_page_number = await make_get_request(FILMS_URL)
         response_with_page_number_1 = await make_get_request(FILMS_URL, {'page_number': 1})
 
-        assert response_with_page_number_1.status == 200, 'Wrong status code'
+        assert response_with_page_number_1.status == HTTPStatus.OK, 'Wrong status code'
         assert response_without_page_number == response_with_page_number_1, 'Pages are not the same'
 
     @pytest.mark.asyncio
@@ -127,7 +128,7 @@ class TestFilms:
         response_with_page_number_1 = await make_get_request(FILMS_URL, {'page_number': 1})
         response_with_page_number_2 = await make_get_request(FILMS_URL, {'page_number': 2})
 
-        assert response_with_page_number_1.status == 200, 'Wrong status code'
+        assert response_with_page_number_1.status == HTTPStatus.OK, 'Wrong status code'
         assert response_with_page_number_1 != response_with_page_number_2, 'Pages are the same'
 
     @pytest.mark.parametrize('page_number', [15, 200, '10'])
@@ -138,7 +139,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'page_number': page_number})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
 
     @pytest.mark.parametrize('page_number', [700, 1000, 2000])
     @pytest.mark.asyncio
@@ -166,7 +167,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'page_number': page_number})
 
-        assert response.status == 422, 'Wrong status code'
+        assert response.status == HTTPStatus.UNPROCESSABLE_ENTITY, 'Wrong status code'
         assert response.body['detail'][0]['loc'][1] == 'page_number', 'Wrong error location'
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
@@ -178,7 +179,7 @@ class TestFilms:
         response_without_sort = await make_get_request(FILMS_URL)
         response_with_sort = await make_get_request(FILMS_URL, {'sort': Sort.DESC})
 
-        assert response_with_sort.status == 200, 'Wrong status code'
+        assert response_with_sort.status == HTTPStatus.OK, 'Wrong status code'
         assert response_without_sort == response_with_sort, 'Sorts are not the same'
 
     @pytest.mark.parametrize('sort', [Sort.DESC, Sort.ASC])
@@ -190,7 +191,7 @@ class TestFilms:
         response = await make_get_request(FILMS_URL, {'sort': sort})
         imdb_ratings = [film['imdb_rating'] for film in response.body]
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         await check_ratings(imdb_ratings, sort)
 
     @pytest.mark.parametrize('sort', [
@@ -217,7 +218,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'genre': genre_uuid})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == number_of_films_by_genre, 'Wrong number of films by genre'
 
     @pytest.mark.parametrize('genre_uuid', [
@@ -230,7 +231,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, {'genre': genre_uuid})
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == 0, 'Wrong number of films by genre'
 
     @pytest.mark.parametrize('query_params', [
@@ -248,7 +249,7 @@ class TestFilms:
 
         response = await make_get_request(FILMS_URL, query_params)
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
 
 
 class TestCache:
@@ -265,7 +266,7 @@ class TestCache:
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert response.body.get('uuid') == film_uuid, 'Wrong uuid in response'
 
     @pytest.mark.asyncio
@@ -279,7 +280,7 @@ class TestCache:
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
 
-        assert response.status == 404, 'Wrong status code'
+        assert response.status == HTTPStatus.NOT_FOUND, 'Wrong status code'
         assert response.body['detail'] == 'film not found', 'Wrong error message'
 
     @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
@@ -299,7 +300,7 @@ class TestCache:
         await sleep(diff_time)
         response_cache = await make_get_request(FILMS_URL, query_params)
 
-        assert response_cache.status == 200, 'Wrong status code'
+        assert response_cache.status == HTTPStatus.OK, 'Wrong status code'
         assert response_es.body == response_cache.body, 'Response dont match'
 
     @pytest.mark.asyncio
@@ -319,5 +320,5 @@ class TestCache:
 
         response = await make_get_request(FILMS_URL, query_params)
 
-        assert response.status == 200, 'Wrong status code'
+        assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == 0, 'Wrong error message'
