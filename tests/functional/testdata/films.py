@@ -12,7 +12,7 @@ async def get_films_data(n: int) -> list[dict]:
             {'id': str(uuid.uuid4()), 'name': 'Sci-Fi'}
         ],
         'title': 'The Star',
-        'description': 'New World',
+        'description': 'New World, new star',
         'director': ['Stan'],
         'actors_names': ['Ann', 'Bob'],
         'writers_names': ['Ben', 'Howard'],
