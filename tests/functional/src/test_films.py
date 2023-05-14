@@ -20,15 +20,11 @@ class TestFilm:
 
         response = await make_get_request(f'{FILMS_URL}/{film_uuid}')
 
+        expected_fields = ('uuid', 'title', 'imdb_rating', 'description', 'directors', 'actors', 'writers', 'genre')
+        for field in expected_fields:
+            assert field in response.body, f'No {field} in response'
+
         assert response.status == HTTPStatus.OK, 'Wrong status code'
-        assert 'uuid' in response.body, 'No uuid in response'
-        assert 'title' in response.body, 'No title in response'
-        assert 'imdb_rating' in response.body, 'No imdb_rating in response'
-        assert 'description' in response.body, 'No description in response'
-        assert 'directors' in response.body, 'No directors in response'
-        assert 'actors' in response.body, 'No actors in response'
-        assert 'writers' in response.body, 'No writers in response'
-        assert 'genre' in response.body, 'No genre in response'
         assert response.body['uuid'] == film_uuid
 
     @pytest.mark.parametrize('film_uuid',
