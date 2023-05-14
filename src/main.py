@@ -48,7 +48,6 @@ app.include_router(persons.router, prefix='/api/v1/persons', tags=['persons'])
 
 @app.exception_handler(RequestError)
 async def bad_storage_request_exception_handler(request, exc):
-    print(f"OMG! An HTTP error!: {repr(exc)}")
     http_exc = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=exc.error)
     return await http_exception_handler(request, http_exc)
 

@@ -207,7 +207,6 @@ class TestCache:
         await es_write_data(EsIndex.PERSON, person_data)
         await make_get_request(f'{PERSONS_URL}/{person_uuid}')
         await es_delete_data(EsIndex.PERSON, person_uuid)
-        print(person_uuid)
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(f'{PERSONS_URL}/{person_uuid}')
