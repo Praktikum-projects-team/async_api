@@ -7,10 +7,11 @@ from tests.functional.utils.constants import CACHE_TTL, DEFAULT_PAGE_SIZE, EsInd
 
 from tests.functional.utils.routes import PERSONS_URL
 
+pytestmark = pytest.mark.asyncio
+
 
 class TestPerson:
 
-    @pytest.mark.asyncio
     async def test_person_structure(self, es_write_data, make_get_request):
         person_data = await get_persons_data(1)
         person_uuid = await get_person_uuid_from_person_data(person_data)
@@ -30,7 +31,6 @@ class TestPerson:
     @pytest.mark.parametrize('person_uuid',
                              [0, '00af52ec-9345-4d66-adbe-50eb917f463a', 'wrong_uuid', '777']
                              )
-    @pytest.mark.asyncio
     async def test_person_not_in_es(self, es_write_data, make_get_request, person_uuid):
         person_data = await get_persons_data(1)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -43,7 +43,6 @@ class TestPerson:
 
 class TestPersons:
 
-    @pytest.mark.asyncio
     async def test_persons_structure(self, es_write_data, make_get_request):
         person_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -57,7 +56,6 @@ class TestPersons:
         assert 'role' in response.body[0]['films'][0], 'No role in response'
         assert 'uuid' in response.body[0]['films'][0], 'No person_uuid in response'
 
-    @pytest.mark.asyncio
     async def test_persons_page_size_default(self, es_write_data, make_get_request):
         person_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -68,7 +66,6 @@ class TestPersons:
         assert len(response.body) == DEFAULT_PAGE_SIZE, 'Wrong page size in response'
 
     @pytest.mark.parametrize('page_size', [1, 15, 19, 20, 21, '10'])
-    @pytest.mark.asyncio
     async def test_persons_page_size(self, es_write_data, make_get_request, page_size):
         person_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -78,7 +75,6 @@ class TestPersons:
         assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert len(response.body) == int(page_size), 'Wrong page size in response'
 
-    @pytest.mark.asyncio
     async def test_persons_page_size_max(self, es_write_data, make_get_request):
         person_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -97,7 +93,6 @@ class TestPersons:
             ('%#$*', 'value is not a valid integer'),
         ]
     )
-    @pytest.mark.asyncio
     async def test_persons_page_size_incorrect(self, es_write_data, make_get_request, page_size, msg):
         person_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -108,7 +103,6 @@ class TestPersons:
         assert response.body['detail'][0]['loc'][1] == 'page_size', 'Wrong error location'
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
-    @pytest.mark.asyncio
     async def test_persons_page_number_default(self, es_write_data, make_get_request):
         person_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, person_data)
@@ -119,7 +113,6 @@ class TestPersons:
         assert response_with_page_number_1.status == HTTPStatus.OK, 'Wrong status code'
         assert response_without_page_number == response_with_page_number_1, 'Pages are not the same'
 
-    @pytest.mark.asyncio
     async def test_persons_page_number_compare(self, es_write_data, make_get_request):
         persons_data = await get_persons_data(DEFAULT_PAGE_SIZE*2)
         await es_write_data(EsIndex.PERSON, persons_data)
@@ -131,7 +124,6 @@ class TestPersons:
         assert response_with_page_number_1 != response_with_page_number_2, 'Pages are the same'
 
     @pytest.mark.parametrize('page_number', [4, 15, '10', 100, 200])
-    @pytest.mark.asyncio
     async def test_persons_page_number(self, es_write_data, make_get_request, page_number):
         persons_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, persons_data)
@@ -141,7 +133,6 @@ class TestPersons:
         assert response.status == HTTPStatus.OK, 'Wrong status code'
 
     @pytest.mark.parametrize('page_number', [300, 400])
-    @pytest.mark.asyncio
     async def test_persons_page_number_more(self, es_write_data, make_get_request, page_number):
         persons_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, persons_data)
@@ -152,7 +143,6 @@ class TestPersons:
         assert response.body['detail'] == 'persons not found', 'Wrong error message'
 
     @pytest.mark.parametrize('page_number', [700, 1000, 2000])
-    @pytest.mark.asyncio
     async def test_persons_page_number_max(self, es_write_data, make_get_request, page_number):
         persons_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, persons_data)
@@ -170,7 +160,6 @@ class TestPersons:
             ('%#$*', 'value is not a valid integer'),
         ]
     )
-    @pytest.mark.asyncio
     async def test_persons_page_number_incorrect(self, es_write_data, make_get_request, page_number, msg):
         persons_data = await get_persons_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.PERSON, persons_data)
@@ -182,11 +171,9 @@ class TestPersons:
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
 
-@pytest.mark.debug
 class TestCache:
 
     @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
-    @pytest.mark.asyncio
     async def test_film_from_cache_redis(self, es_write_data, es_delete_data, make_get_request, diff_time):
         person_data = await get_persons_data(1)
         person_uuid = await get_person_uuid_from_person_data(person_data)
@@ -200,14 +187,12 @@ class TestCache:
         assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert response.body.get('uuid') == person_uuid, 'Wrong uuid in response'
 
-    @pytest.mark.asyncio
     async def test_film_from_cache_redis_ttl_expired(self, es_write_data, es_delete_data, make_get_request):
         person_data = await get_persons_data(1)
         person_uuid = await get_person_uuid_from_person_data(person_data)
         await es_write_data(EsIndex.PERSON, person_data)
         await make_get_request(f'{PERSONS_URL}/{person_uuid}')
         await es_delete_data(EsIndex.PERSON, person_uuid)
-        print(person_uuid)
         await sleep(CACHE_TTL + 1)
 
         response = await make_get_request(f'{PERSONS_URL}/{person_uuid}')
@@ -216,7 +201,6 @@ class TestCache:
         assert response.body['detail'] == 'person not found', 'Wrong error message'
 
     @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
-    @pytest.mark.asyncio
     async def test_films_params_form_cache_redid(
             self, es_write_data, es_delete_data, make_get_request, diff_time
     ):

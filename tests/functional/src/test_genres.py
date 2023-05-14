@@ -8,10 +8,11 @@ from tests.functional.utils.constants import CACHE_TTL, DEFAULT_PAGE_SIZE, EsInd
 from tests.functional.utils.routes import GENRES_URL
 import logging
 
+pytestmark = pytest.mark.asyncio
+
 
 class TestGenre:
 
-    @pytest.mark.asyncio
     async def test_one_genre(self, es_write_data, make_get_request):
         genre = await get_genres_data(1)
         genre_uuid = await get_genre_uuid(genre)
@@ -24,7 +25,6 @@ class TestGenre:
         assert response.body['uuid'] == genre_uuid, 'Wrong uuid in response'
         assert response.body['name'] == genre[0]['name'], 'Wrong genre name in response'
 
-    @pytest.mark.asyncio
     async def test_one_genre_not_in_es(self, es_write_data, make_get_request):
         genre = await get_genres_data(1)
         genre_uuid = await get_genre_uuid(genre)
@@ -37,7 +37,6 @@ class TestGenre:
 
 
 class TestGenres:
-    @pytest.mark.asyncio
     async def test_all_genre_default_page(self, es_write_data, make_get_request):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE + 1)
         await es_write_data(EsIndex.GENRE, genres)
@@ -52,7 +51,6 @@ class TestGenres:
             assert 'name' in genre, 'No genre name in response'
 
     @pytest.mark.parametrize('page_size', [1, 15, 19, 20, 21, '10', 200, 1000])
-    @pytest.mark.asyncio
     async def test_all_genres_page_size(self, es_write_data, make_get_request, page_size):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
@@ -70,7 +68,6 @@ class TestGenres:
             ('%#$*', 'value is not a valid integer')
         ]
     )
-    @pytest.mark.asyncio
     async def test_all_genres_invalid_pages(self, es_write_data, make_get_request, page_size, msg):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
@@ -80,7 +77,6 @@ class TestGenres:
         assert response.body['detail'][0]['loc'][1] == 'page_size', 'Wrong error location'
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
-    @pytest.mark.asyncio
     async def test_all_genres_compare_pages(self, es_write_data, make_get_request):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE * 2)
         await es_write_data(EsIndex.GENRE, genres)
@@ -92,7 +88,6 @@ class TestGenres:
         assert response_first_page != response_second_page, 'Pages are the same'
 
     @pytest.mark.parametrize('page_number', [15, '10', 200])
-    @pytest.mark.asyncio
     async def test_all_genres_page_number(self, es_write_data, make_get_request, page_number):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
@@ -101,7 +96,6 @@ class TestGenres:
         assert response.status == HTTPStatus.OK, 'Wrong status code'
 
     @pytest.mark.parametrize('page_number', [700, 1000])
-    @pytest.mark.asyncio
     async def test_all_genres_page_number_max(self, es_write_data, make_get_request, page_number):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
@@ -118,7 +112,6 @@ class TestGenres:
             ('%#$*', 'value is not a valid integer'),
         ]
     )
-    @pytest.mark.asyncio
     async def test_all_genres_invalid_page_number(self, es_write_data, make_get_request, page_number, msg):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
@@ -129,7 +122,6 @@ class TestGenres:
         assert response.body['detail'][0]['msg'] == msg, 'Wrong error message'
 
     @pytest.mark.parametrize('page_size, page_number', [(1, 15), (20, 200), ('10', '10')])
-    @pytest.mark.asyncio
     async def test_all_genres(self, es_write_data, make_get_request, page_size, page_number):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE * 2)
         await es_write_data(EsIndex.GENRE, genres)
@@ -141,7 +133,6 @@ class TestGenres:
 
 class TestCache:
     @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
-    @pytest.mark.asyncio
     async def test_one_genre_from_cache_redis(self, es_write_data, es_delete_data, make_get_request, diff_time):
         genre = await get_genres_data(1)
         genre_uuid = await get_genre_uuid(genre)
@@ -154,7 +145,6 @@ class TestCache:
         assert response.status == HTTPStatus.OK, 'Wrong status code'
         assert response.body['uuid'] == genre_uuid, 'Wrong uuid in response'
 
-    @pytest.mark.asyncio
     async def test_one_genre_from_cache_redis_ttl_expired(self, es_write_data, es_delete_data, make_get_request):
         genre = await get_genres_data(1)
         genre_uuid = await get_genre_uuid(genre)
@@ -168,7 +158,6 @@ class TestCache:
         assert response.body['detail'] == 'genre not found', 'Wrong error message'
 
     @pytest.mark.parametrize('diff_time', [0, CACHE_TTL - 1])
-    @pytest.mark.asyncio
     async def test_all_genres_from_cache_redis(self, es_write_data, es_delete_data, make_get_request, diff_time):
         genres = await get_genres_data(DEFAULT_PAGE_SIZE)
         await es_write_data(EsIndex.GENRE, genres)
