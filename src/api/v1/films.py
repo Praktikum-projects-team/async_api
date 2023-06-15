@@ -8,6 +8,8 @@ from api.v1.models.films import FilmBaseApi, FilmDetailsApi, film_to_api, person
 from api.v1.utils import Page, FilmSort, FilmFilter
 from services.film import FilmService, get_film_service
 
+# from api.v1.auth.auth_bearer import BaseJWTBearer
+
 router = APIRouter()
 
 
@@ -16,7 +18,8 @@ router = APIRouter()
     response_model=list[FilmBaseApi],
     summary='Список фильмов',
     description='Список фильмов с пагинацией, фильтрацией по жанрам и сортировкой по рейтингу',
-    response_description='uuid, название и рейтинг'
+    response_description='uuid, название и рейтинг',
+    # dependencies=[Depends(BaseJWTBearer())]
 )
 async def get_all_films(
     filtration: FilmFilter = Depends(),

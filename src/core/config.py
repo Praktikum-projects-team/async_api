@@ -33,3 +33,9 @@ class CacheTTLConfig(BaseSettings):
     movies_ttl: int = Field(..., env='MOVIES_TTL')
     persons_ttl: int = Field(..., env='PERSONS_TTL')
     genres_ttl: int = Field(..., env='GENRES_TTL')
+
+
+class AuthConfig(BaseSettings):
+    host: str = Field(..., env='AUTH_HOST')
+    jwt_secret: str = Field(..., env='JWT_SECRET')
+    jwt_algorithm: str = Field(..., env='JWT_ALGORITHM')

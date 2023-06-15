@@ -18,57 +18,93 @@ services:
       timeout: 5s
       retries: 5
     restart: always
-
-  elastic:
-    container_name: elastic
-    image: ghcr.io/yp-middle-python-24/elasticsearch:8.7.0
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
-    healthcheck:
-      test: [ "CMD-SHELL", "curl -f 'http://elastic:9200/_cat/health'" ]
-      interval: 10s
-      timeout: 30s
-      retries: 2
-    volumes:
-      - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
-    depends_on:
-      - postgres
-
-  redis:
-    container_name: redis
-    image: redis:7
-    env_file:
-      - ./.env
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    volumes:
-      - $HOME/redis/data:/var/lib/redis/data
-
-  fastapi:
-    container_name: fastapi
-    build: .
-    env_file:
-      - ./.env
-    depends_on:
-      - redis
-      - elastic
-
-  etl:
-    image: ghcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
-    env_file:
-      - ./.env
-    depends_on:
-      - postgres
-      - elastic
-
-  nginx:
-    image: nginx:latest
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/configs:/etc/nginx/conf.d:ro
-    depends_on:
-      - fastapi
     ports:
-      - "80:80"
+      - "5432:5432"
+#
+#  elastic:
+#    container_name: elastic
+#    image: ghcr.io/yp-middle-python-24/elasticsearch:8.7.0
+#    environment:
+#      - discovery.type=single-node
+#      - xpack.security.enabled=false
+#      - "ES_JAVA_OPTS=-Xms200m -Xmx200m"
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -f 'http://elastic:9200/_cat/health'" ]
+#      interval: 10s
+#      timeout: 30s
+#      retries: 2
+#    volumes:
+#      - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
+#    depends_on:
+#      - postgres
+#
+#  redis:
+#    container_name: redis
+#    image: redis:7
+#    env_file:
+#      - ./.env
+#    environment:
+#      - REDIS_PASSWORD=${REDIS_PASSWORD}
+#    volumes:
+#      - $HOME/redis/data:/var/lib/redis/data
+#
+#  fastapi:
+#    container_name: fastapi
+#    build: .
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      - redis
+#      - elastic
+
+#  etl:
+#    image: ghcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
+#    env_file:
+#      - ./.env
+#    depends_on:
+#      - postgres
+#      - elastic
+
+#  nginx:
+#    image: nginx:latest
+#    volumes:
+#      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+#      - ./nginx/configs:/etc/nginx/conf.d:ro
+#    depends_on:
+#      - fastapi
+#    ports:
+#      - "80:80"
+
+
+  auth_postgres:
+    container_name: auth_postgres
+    image: "postgres:13"
+    env_file:
+      - envs/auth/.env
+    volumes:
+      - $HOME/postgresql/data:/var/lib/postgresql/auth_api_data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U app -d auth_database" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    ports:
+      - "6432:5432"
+
+#  auth_redis:
+#    container_name: auth_redis
+#    image: redis:7
+#    env_file:
+#      - ./envs/.env_auth
+#    volumes:
+#      - $HOME/redis/data:/var/lib/redis/data
+#
+#  auth:
+#    container_name: auth
+#    image: ghcr.io/praktikum-projects-team/auth_api:0.1.1
+#    env_file:
+#      - ./envs/.env_auth
+#    depends_on:
+#      - auth_redis
+#      - auth_postgres
