@@ -14,8 +14,8 @@ services:
       timeout: 5s
       retries: 5
     restart: always
-    ports:
-      - "5432:5432"
+#    ports:
+#      - "5432:5432"
 
   elastic:
     container_name: elastic
@@ -33,8 +33,8 @@ services:
       - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
     depends_on:
       - postgres
-    ports:
-      - "9200:9200"
+#    ports:
+#      - "9200:9200"
 
   redis:
     container_name: redis
@@ -43,8 +43,8 @@ services:
       - envs/async_api/.env
     volumes:
       - $HOME/redis/data:/var/lib/redis/data
-    ports:
-      - "6379:6379"
+#    ports:
+#      - "6379:6379"
 
   fastapi:
     container_name: fastapi
@@ -70,8 +70,8 @@ services:
       - ./nginx/configs:/etc/nginx/conf.d:ro
     depends_on:
       - fastapi
-    ports:
-      - "80:80"
+#    ports:
+#      - "80:80"
 
 
   auth_postgres:
@@ -87,8 +87,8 @@ services:
       timeout: 5s
       retries: 5
     restart: always
-    ports:
-      - "6432:5432"
+#    ports:
+#      - "6432:5432"
 
   auth_redis:
     container_name: auth_redis
@@ -97,8 +97,8 @@ services:
       - envs/auth/.env
     volumes:
       - $HOME/redis/data:/var/lib/redis/data
-    ports:
-      - "6377:6379"
+#    ports:
+#      - "6377:6379"
 
   auth:
     container_name: auth
@@ -108,5 +108,5 @@ services:
     depends_on:
       - auth_redis
       - auth_postgres
-    ports:
-      - "8001:8000"
+#    ports:
+#      - "8001:8000"
