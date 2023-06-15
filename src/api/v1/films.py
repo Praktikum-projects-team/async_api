@@ -8,7 +8,7 @@ from api.v1.models.films import FilmBaseApi, FilmDetailsApi, film_to_api, person
 from api.v1.utils import Page, FilmSort, FilmFilter
 from services.film import FilmService, get_film_service
 
-# from api.v1.auth.auth_bearer import BaseJWTBearer
+from api.v1.auth.auth_bearer import BaseJWTBearer
 
 router = APIRouter()
 
@@ -19,7 +19,7 @@ router = APIRouter()
     summary='Список фильмов',
     description='Список фильмов с пагинацией, фильтрацией по жанрам и сортировкой по рейтингу',
     response_description='uuid, название и рейтинг',
-    # dependencies=[Depends(BaseJWTBearer())]
+    dependencies=[Depends(BaseJWTBearer())],
 )
 async def get_all_films(
     filtration: FilmFilter = Depends(),
@@ -37,7 +37,9 @@ async def get_all_films(
     response_model=list[FilmBaseApi],
     summary='Поиск фильмов',
     description='Список фильмов, удовлетворяющих условию поиска',
-    response_description='Фильмы с их uuid, названием и рейтингом'
+    response_description='Фильмы с их uuid, названием и рейтингом',
+    dependencies=[Depends(BaseJWTBearer())],
+
 )
 async def search_film(
     query: Optional[str] = Query(
@@ -59,7 +61,8 @@ async def search_film(
     response_model=FilmDetailsApi,
     summary='Подробная информация о фильме',
     description='Вывод подробной информации по uuid фильма',
-    response_description='uuid, название, рейтинг, описание, режиссеры, актеры, сценаристы, жанры'
+    response_description='uuid, название, рейтинг, описание, режиссеры, актеры, сценаристы, жанры',
+    dependencies=[Depends(BaseJWTBearer())],
 )
 async def film_details(
         film_id: str,

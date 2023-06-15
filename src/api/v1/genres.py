@@ -1,6 +1,8 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+
+from api.v1.auth.auth_bearer import BaseJWTBearer
 from services.genre import GenreService, get_genre_service
 from api.v1.models.genres import GenreApi, genre_to_api
 from api.v1.utils import Page
@@ -9,7 +11,7 @@ from typing import Optional
 router = APIRouter()
 
 
-@router.get('', response_model=list[GenreApi])
+@router.get('', response_model=list[GenreApi], dependencies=[Depends(BaseJWTBearer())])
 async def genre_list(
         genre_service: GenreService = Depends(get_genre_service),
         page: Page = Depends()
@@ -21,7 +23,7 @@ async def genre_list(
     return genres_list
 
 
-@router.get('/search', response_model=list[GenreApi])
+@router.get('/search', response_model=list[GenreApi], dependencies=[Depends(BaseJWTBearer())])
 async def genre_search(
         query: Optional[str] = Query(
             ...,
@@ -38,7 +40,7 @@ async def genre_search(
     return genres_list
 
 
-@router.get('/{genre_id}', response_model=GenreApi)
+@router.get('/{genre_id}', response_model=GenreApi, dependencies=[Depends(BaseJWTBearer())])
 async def genre_details(
         genre_id: str,
         genre_service: GenreService = Depends(get_genre_service)
