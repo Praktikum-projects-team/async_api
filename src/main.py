@@ -51,11 +51,6 @@ async def bad_storage_request_exception_handler(request, exc):
     http_exc = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=exc.error)
     return await http_exception_handler(request, http_exc)
 
-
-
-
-
-
 if __name__ == '__main__':
     uvicorn.run(
         'main:app',
