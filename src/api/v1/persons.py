@@ -1,6 +1,8 @@
 from http import HTTPStatus
 
 from fastapi import APIRouter, Depends, HTTPException, Query
+
+from api.v1.auth.auth_bearer import BaseJWTBearer
 from services.person import PersonService, get_person_service
 from services.film import FilmService, get_film_service
 from typing import Optional
@@ -11,7 +13,7 @@ from api.v1.utils import Page, FilmSort, FilmFilter
 router = APIRouter()
 
 
-@router.get('', response_model=list[PersonApi])
+@router.get('', response_model=list[PersonApi], dependencies=[Depends(BaseJWTBearer())])
 async def person_list(
         person_service: PersonService = Depends(get_person_service),
         page: Page = Depends()
@@ -23,7 +25,7 @@ async def person_list(
     return persons_list
 
 
-@router.get('/search', response_model=list[PersonApi])
+@router.get('/search', response_model=list[PersonApi], dependencies=[Depends(BaseJWTBearer())])
 async def search_persons(
         query: Optional[str] = Query(
             ...,
@@ -39,7 +41,7 @@ async def search_persons(
     return persons_list
 
 
-@router.get('/{person_id}', response_model=PersonApi)
+@router.get('/{person_id}', response_model=PersonApi, dependencies=[Depends(BaseJWTBearer())])
 async def person_details(
         person_id: str,
         person_service: PersonService = Depends(get_person_service)

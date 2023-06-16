@@ -4,20 +4,18 @@ services:
     container_name: postgres
     image: "postgres:13"
     env_file:
-      - ./.env
-    environment:
-      POSTGRES_DB: ${DB_NAME}
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      - envs/async_api/.env
     volumes:
       - ./movies_pg_dump.sql:/docker-entrypoint-initdb.d/movies_pg_dump.sql
-      - $HOME/postgresql/data:/var/lib/postgresql/data
+      - $HOME/postgresql/movies_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U app -d movies_database" ]
       interval: 5s
       timeout: 5s
       retries: 5
     restart: always
+#    ports:
+#      - "5432:5432"
 
   elastic:
     container_name: elastic
@@ -35,22 +33,24 @@ services:
       - $HOME/elasticsearch/data:/var/lib/elasticsearch/data
     depends_on:
       - postgres
+#    ports:
+#      - "9200:9200"
 
   redis:
     container_name: redis
     image: redis:7
     env_file:
-      - ./.env
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - envs/async_api/.env
     volumes:
       - $HOME/redis/data:/var/lib/redis/data
+#    ports:
+#      - "6379:6379"
 
   fastapi:
     container_name: fastapi
     build: .
     env_file:
-      - ./.env
+      - envs/async_api/.env
     depends_on:
       - redis
       - elastic
@@ -58,7 +58,7 @@ services:
   etl:
     image: ghcr.io/praktikum-projects-team/postgres_to_elastic_etl:0.1.1
     env_file:
-      - ./.env
+      - envs/async_api/.env
     depends_on:
       - postgres
       - elastic
@@ -70,5 +70,43 @@ services:
       - ./nginx/configs:/etc/nginx/conf.d:ro
     depends_on:
       - fastapi
-    ports:
-      - "80:80"
+#    ports:
+#      - "80:80"
+
+
+  auth_postgres:
+    container_name: auth_postgres
+    image: "postgres:13"
+    env_file:
+      - envs/auth/.env
+    volumes:
+      - $HOME/postgresql/auth_data:/var/lib/postgresql/auth_api_data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U app -d auth_database" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+#    ports:
+#      - "6432:5432"
+
+  auth_redis:
+    container_name: auth_redis
+    image: redis:7
+    env_file:
+      - envs/auth/.env
+    volumes:
+      - $HOME/redis/data:/var/lib/redis/data
+#    ports:
+#      - "6377:6379"
+
+  auth:
+    container_name: auth
+    image: ghcr.io/praktikum-projects-team/auth_api:0.1.1
+    env_file:
+      - envs/auth/.env
+    depends_on:
+      - auth_redis
+      - auth_postgres
+#    ports:
+#      - "8001:8000"

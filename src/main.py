@@ -3,7 +3,7 @@ from http import HTTPStatus
 
 import uvicorn
 from elasticsearch import AsyncElasticsearch, RequestError
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
 from fastapi.responses import ORJSONResponse
 from redis.asyncio import Redis
@@ -50,7 +50,6 @@ app.include_router(persons.router, prefix='/api/v1/persons', tags=['persons'])
 async def bad_storage_request_exception_handler(request, exc):
     http_exc = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail=exc.error)
     return await http_exception_handler(request, http_exc)
-
 
 if __name__ == '__main__':
     uvicorn.run(
