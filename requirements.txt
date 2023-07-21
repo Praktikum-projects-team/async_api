@@ -16,3 +16,4 @@ uvloop==0.17.0 ; sys_platform != "win32" and implementation_name == "cpython"
 backoff==2.2.1
 pyjwt==2.7.0
 httpx==0.24.1
+python-logstash==0.4.8
