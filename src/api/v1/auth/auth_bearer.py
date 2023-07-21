@@ -25,7 +25,7 @@ class BaseJWTBearer(HTTPBearer):
         if credentials:
             if not credentials.scheme == self.token_type:
                 raise HTTPException(status_code=401, detail="Invalid authentication scheme.")
-            if not await self.verify_jwt(credentials.credentials, auth_api):
+            if not await self.verify_jwt(request.app.state.logger, credentials.credentials, auth_api):
                 raise HTTPException(status_code=403, detail="Invalid token or expired token.")
             return credentials.credentials
         else:
@@ -44,12 +44,12 @@ class BaseJWTBearer(HTTPBearer):
         """
         return True
 
-    async def verify_jwt(self, jwtoken: str, auth_api: AuthApi) -> bool:
+    async def verify_jwt(self, logger:logging.Logger, jwtoken: str, auth_api: AuthApi) -> bool:
 
         try:
             current_user = await auth_api.check_token(jwtoken)
         except ConnectError:
-            logging.exception('auth api connection error')
+            logger.exception('auth api connection error')
             current_user = self.decode_jwt(jwtoken)
 
         return self.check_payload(current_user) if current_user else False

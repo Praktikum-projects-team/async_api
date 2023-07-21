@@ -2,6 +2,7 @@ import logging
 from http import HTTPStatus
 
 import uvicorn
+import logstash
 from elasticsearch import AsyncElasticsearch, RequestError
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
@@ -19,6 +20,7 @@ load_dotenv()
 app_config = config.AppConfig()
 elastic_config = config.ElasticConfig()
 redis_config = config.RedisConfig()
+logstash_config = config.LogstashConfig()
 
 
 app = FastAPI(
@@ -26,6 +28,15 @@ app = FastAPI(
     docs_url='/api/openapi',
     openapi_url='/api/openapi.json',
     default_response_class=ORJSONResponse,
+)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logger.addHandler(
+    logstash.LogstashHandler(
+        host=logstash_config.logstash_host,
+        port=logstash_config.logstash_port,
+        version=1,
+    )
 )
 
 
@@ -39,6 +50,16 @@ async def startup():
 async def shutdown():
     await redis.redis.close()
     await elastic.es.close()
+
+
+@app.middleware("http")
+async def request_id_to_logger(request: Request, call_next):
+    request_id = request.headers.get('X-Request-Id')
+    request.app.state.logger = logging.LoggerAdapter(
+        logger=logger,
+        extra={'tags': ['async_api'], 'X-Request-Id': request_id},
+    )
+    return await call_next(request)
 
 
 app.include_router(films.router, prefix='/api/v1/films', tags=['films'])

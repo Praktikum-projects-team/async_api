@@ -38,3 +38,8 @@ class AuthConfig(BaseSettings):
     host: str = Field(..., env='AUTH_HOST')
     jwt_secret: str = Field(..., env='JWT_SECRET')
     jwt_algorithm: str = Field(..., env='JWT_ALGORITHM')
+
+
+class LogstashConfig(BaseSettings):
+    logstash_host:str = Field(..., env='LOGSTASH_HOST')
+    logstash_port:int = Field(..., env='LOGSTASH_PORT')
