@@ -1,8 +1,10 @@
 import logging
 from http import HTTPStatus
 
-import uvicorn
 import logstash
+import sentry_sdk
+import uvicorn
+from dotenv import load_dotenv
 from elasticsearch import AsyncElasticsearch, RequestError
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exception_handlers import http_exception_handler
@@ -13,7 +15,6 @@ from api.v1 import films, genres, persons
 from core import config
 from core.logger import LOGGING
 from db import elastic, redis
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -21,7 +22,12 @@ app_config = config.AppConfig()
 elastic_config = config.ElasticConfig()
 redis_config = config.RedisConfig()
 logstash_config = config.LogstashConfig()
+sentry_config = config.SentryConfig()
 
+sentry_sdk.init(
+    dsn=sentry_config.dsn,
+    traces_sample_rate=0.4,
+)
 
 app = FastAPI(
     title=app_config.project_name,
