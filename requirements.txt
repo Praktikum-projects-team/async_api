@@ -17,3 +17,4 @@ backoff==2.2.1
 pyjwt==2.7.0
 httpx==0.24.1
 python-logstash==0.4.8
+sentry-sdk~=1.28.1

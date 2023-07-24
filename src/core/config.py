@@ -43,3 +43,7 @@ class AuthConfig(BaseSettings):
 class LogstashConfig(BaseSettings):
     logstash_host:str = Field(..., env='LOGSTASH_HOST')
     logstash_port:int = Field(..., env='LOGSTASH_PORT')
+
+
+class SentryConfig(BaseSettings):
+    dsn: str = Field(..., env='SENTRY_DSN')

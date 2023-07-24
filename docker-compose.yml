@@ -83,8 +83,8 @@ services:
       - fastapi
     networks:
       - cinema
-    # ports:
-    #   - "80:80"
+    ports:
+      - "80:80"
 
   auth_postgres:
     container_name: auth_postgres
