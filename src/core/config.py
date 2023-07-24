@@ -46,4 +46,4 @@ class LogstashConfig(BaseSettings):
 
 
 class SentryConfig(BaseSettings):
-    dsn: str = Field(..., env='SENTRY_DSN')
+    dns: str = Field(..., env='SENTRY_DNS')
